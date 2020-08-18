@@ -27,7 +27,7 @@ export default function Post({ post }) {
           Liked from <strong>random_user</strong> and{" "}
           <strong>1,000 others</strong>
         </Card.Text>
-        <Comments />
+        <Comments postId={post.id} />
       </Card.Body>
     </Card>
   );

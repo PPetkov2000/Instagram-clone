@@ -18,18 +18,18 @@ const globalState = {
     //   imageUrl: "/images/endgame_post.jpg",
     // },
   ],
-  comments: [
-    {
-      creatorId: 1,
-      creator: "User One",
-      comment: "Comment One",
-    },
-    {
-      creatorId: 2,
-      creator: "User Two",
-      comment: "Comment Two",
-    },
-  ],
+  // comments: [
+  //   {
+  //     creatorId: 1,
+  //     creator: "User One",
+  //     text: "Comment One",
+  //   },
+  //   {
+  //     creatorId: 2,
+  //     creator: "User Two",
+  //     text: "Comment Two",
+  //   },
+  // ],
 };
 
 function Context({ children }) {

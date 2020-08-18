@@ -1,14 +1,22 @@
 import React, { useState } from "react";
 import { InputGroup, FormControl, Button } from "react-bootstrap";
+import { projectFirestore, timestamp } from "../../firebase/config";
 
-export default function AddComment({ comments, setComments }) {
+export default function AddComment({ postId, username }) {
   const [comment, setComment] = useState("");
 
   const publishComment = () => {
-    setComments([
-      ...comments,
-      { creatorId: Math.random(), creator: "User Three", comment },
-    ]);
+    projectFirestore
+      .collection("posts")
+      .doc(postId)
+      .collection("comments")
+      .add({
+        text: comment,
+        creator: username,
+        postId: postId,
+        timestamp: timestamp(),
+      });
+
     setComment("");
   };
 
