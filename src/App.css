@@ -1,38 +1,78 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.navbar {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 1.6rem;
+}
+
+.nav-icon {
+  font-size: 1.6rem;
+  padding: 0;
+}
+
+.stories-container {
+  width: 70%;
+  display: flex;
+  justify-content: space-around;
+  margin: 0 auto;
+  border: 1px solid gray;
+  margin-bottom: 1.6rem;
+}
+
+.posts-container {
+  width: 70%;
+  margin: 0 auto;
+}
+
+.post {
+  border: 1px solid gray;
+}
+
+.card-header {
+  padding: 0.5rem;
+}
+
+.card-header-img {
+  width: 2.5rem;
+  height: 100%;
+  margin-right: 0.5rem;
+  border: 2px solid rgb(214, 5, 5);
+  border-radius: 50%;
+}
+
+.posts-navbar {
+  margin: 0;
+  padding: 0;
+  margin-top: -20px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.comments-container p {
+  margin: 0;
+}
+
+.navbar-header-dots {
+  margin-top: 15px;
+  margin-right: 10px;
+}
+
+.figure-img {
+  background-color: #888;
+  margin-top: 1rem;
+  border: 2px solid rgb(214, 5, 5);
+  border-radius: 50%;
+}
+
+.uploadForm-container {
+  width: 70%;
+  margin: 0 auto;
+  margin-bottom: 1rem;
+  display: flex;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.progress-bar {
+  height: 5px;
+  background-color: orange;
+  margin-top: 20px;
 }
