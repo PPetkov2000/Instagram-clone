@@ -1,19 +1,22 @@
 import React from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.css";
+import Home from "./components/Home";
+import PostCommentsDetails from "./components/PostCommentsDetails";
 import Navbar from "./components/Navbar";
-import Stories from "./components/Stories";
-import Posts from "./components/Posts";
-import UploadForm from "./components/UploadForm";
-import Context from "./context";
 
 const App = () => {
   return (
-    <Context>
+    <Router>
       <Navbar />
-      <UploadForm />
-      <Stories />
-      <Posts />
-    </Context>
+      <Switch>
+        <Route path="/" exact component={Home} />
+        <Route
+          path="/post-comments-details/:id"
+          component={PostCommentsDetails}
+        />
+      </Switch>
+    </Router>
   );
 };
 
