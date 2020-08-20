@@ -22,7 +22,7 @@ export default function Post({ post }) {
       </Card.Header>
       <Card.Img variant="top" src={post.post.imageUrl} height="600px" />
       <Card.Body>
-        <PostNavbar />
+        <PostNavbar postId={post.id} />
         <Card.Text className="mt-2 mb-2">
           Liked from <strong>random_user</strong> and{" "}
           <strong>1,000 others</strong>
