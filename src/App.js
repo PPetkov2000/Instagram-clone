@@ -4,6 +4,7 @@ import "./App.css";
 import Home from "./components/Home";
 import PostCommentsDetails from "./components/PostCommentsDetails";
 import Navbar from "./components/Navbar";
+import Messages from "./components/Messages";
 
 const App = () => {
   return (
@@ -11,6 +12,7 @@ const App = () => {
       <Navbar />
       <Switch>
         <Route path="/" exact component={Home} />
+        <Route path="/messages" component={Messages} />
         <Route
           path="/post-comments-details/:id"
           component={PostCommentsDetails}
