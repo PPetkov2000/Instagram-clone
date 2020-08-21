@@ -42,7 +42,7 @@
 .posts-navbar {
   margin: 0;
   padding: 0;
-  margin-top: -20px;
+  margin-top: -15px;
   display: flex;
   justify-content: flex-start;
 }
@@ -85,12 +85,104 @@
 }
 
 .post-image {
-  width: 70%;
+  width: 300px;
   height: 600px;
-  flex: 1;
+  flex: 3;
 }
 
 .comments-section {
   width: 30%;
-  flex: 0;
+  flex: 2;
+}
+
+.post-details-header {
+  padding: 0.8rem 0.5rem;
+}
+
+.post-details-footer {
+  padding-bottom: 0;
+}
+
+.modal-title {
+  margin-left: 45%;
+}
+
+.modal-body,
+.messages-body {
+  padding-top: 0;
+}
+
+.messages-container {
+  width: 70%;
+  margin: 0 auto;
+  display: flex;
+  border: 1px solid gray;
+}
+
+.messages-section {
+  width: 35%;
+}
+
+.messages-header {
+  text-align: center;
+}
+
+.messages-item {
+  display: flex;
+  padding-left: 0;
+  padding-bottom: 0.4rem;
+}
+
+.messages-body-img {
+  width: 3.5rem;
+  margin-right: 0.7rem;
+  border: 1px solid black;
+  border-radius: 50%;
+}
+
+.messages-p {
+  font-size: 0.8rem;
+}
+
+.messages-initial {
+  width: 65%;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid gray;
+}
+
+.messages-initial-icon {
+  width: 6rem;
+  height: 6rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border: 2px solid black;
+  border-radius: 50%;
+}
+
+.user-messages-container {
+  width: 65%;
+}
+
+.user-messages-img {
+  width: 2rem;
+  margin-right: 0.7rem;
+  border: 1px solid black;
+  border-radius: 50%;
+}
+
+.popover-item {
+  padding-left: 0;
+  padding-bottom: 0;
+}
+
+.popover-img {
+  width: 3rem;
+  margin-right: 0.7rem;
+  border: 1px solid gray;
+  border-radius: 50%;
+  float: left;
 }
