@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
-import { Link } from "react-router-dom";
-import { Navbar, Nav } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
+import { Navbar, Nav, Modal, ListGroup } from "react-bootstrap";
 import {
   BsHeart,
   BsFillHeartFill,
@@ -14,6 +14,9 @@ import { GlobalStateContext } from "../../context";
 export default function PostNavbar({ postId }) {
   const { username } = useContext(GlobalStateContext);
   const [active, setActive] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const history = useHistory();
+
   const likePost = () => {
     setActive(true);
     projectFirestore
@@ -39,6 +42,13 @@ export default function PostNavbar({ postId }) {
       .catch(console.error);
   };
 
+  const openPostDetails = () => {
+    history.push(`/post-comments-details/${postId}`);
+  };
+
+  const showOptions = () => setShowModal(true);
+  const hideOptions = () => setShowModal(false);
+
   return (
     <>
       <Navbar className="posts-navbar">
@@ -48,12 +58,12 @@ export default function PostNavbar({ postId }) {
           </Nav.Link>
         </Nav>
         <Nav>
-          <Link to="/post-comments-details/:id" className="nav-icon">
+          <Nav.Link className="nav-icon" onClick={openPostDetails}>
             <BsChat />
-          </Link>
+          </Nav.Link>
         </Nav>
         <Nav>
-          <Nav.Link href="#share" className="nav-icon">
+          <Nav.Link href="#options" className="nav-icon" onClick={showOptions}>
             <BsCursor />
           </Nav.Link>
         </Nav>
@@ -63,6 +73,25 @@ export default function PostNavbar({ postId }) {
           </Nav.Link>
         </Nav>
       </Navbar>
+
+      <Modal show={showModal} onHide={hideOptions}>
+        <Modal.Header closeButton>
+          <Modal.Title className="modal-title">Share</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="modal-body">
+          <ListGroup variant="flush">
+            <ListGroup.Item action>Share in Direct</ListGroup.Item>
+            <ListGroup.Item action>Share in Facebook</ListGroup.Item>
+            <ListGroup.Item action>Share in Messenger</ListGroup.Item>
+            <ListGroup.Item action>Share in Twitter</ListGroup.Item>
+            <ListGroup.Item action>Share with Email</ListGroup.Item>
+            <ListGroup.Item action>Copy</ListGroup.Item>
+            <ListGroup.Item action onClick={hideOptions}>
+              Cancel
+            </ListGroup.Item>
+          </ListGroup>
+        </Modal.Body>
+      </Modal>
     </>
   );
 }
