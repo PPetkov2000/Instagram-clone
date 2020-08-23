@@ -1,7 +1,7 @@
 import React from "react";
 import { Figure } from "react-bootstrap";
 
-export default function Story({ story }) {
+const Story = ({ story }) => {
   return (
     <Figure>
       <Figure.Image
@@ -15,3 +15,5 @@ export default function Story({ story }) {
     </Figure>
   );
 }
+
+export default Story;
