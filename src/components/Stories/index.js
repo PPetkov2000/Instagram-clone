@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Story from "../Story";
 
-export default function Stories() {
+const Stories = () => {
   const [stories, setStories] = useState([
     {
       storyId: 1,
@@ -48,3 +48,5 @@ export default function Stories() {
     </div>
   );
 }
+
+export default Stories;
