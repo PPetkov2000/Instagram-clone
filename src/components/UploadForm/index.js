@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Form, FormControl } from "react-bootstrap";
 import ProgressBar from "../ProgressBar";
 
-export default function UploadForm() {
+const UploadForm = () => {
   const [file, setFile] = useState(null);
   const [error, setError] = useState(null);
 
@@ -33,3 +33,5 @@ export default function UploadForm() {
     </div>
   );
 }
+
+export default UploadForm;
