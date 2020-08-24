@@ -4,7 +4,7 @@ import { BsThreeDots } from "react-icons/bs";
 import Comments from "../Comments";
 import PostNavbar from "../PostNavbar";
 
-export default function Post({ post }) {
+const Post = ({ post }) => {
   return (
     <Card className="post mb-5">
       <Card.Header className="card-header">
@@ -32,3 +32,5 @@ export default function Post({ post }) {
     </Card>
   );
 }
+
+export default Post;
