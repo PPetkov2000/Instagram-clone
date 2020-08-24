@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Post from "../Post";
 import { projectFirestore } from "../../firebase/config";
 
-export default function Posts() {
+const Posts = () => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
@@ -26,3 +26,5 @@ export default function Posts() {
     </div>
   );
 }
+
+export default Posts;
