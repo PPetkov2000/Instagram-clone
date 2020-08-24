@@ -3,7 +3,7 @@ import { Card } from "react-bootstrap";
 import PostNavbar from "../PostNavbar";
 import Comments from "../Comments";
 
-function PostCommentsDetails(props) {
+const PostCommentsDetails = (props) => {
   console.log(props);
   return (
     <div className="details-container">
