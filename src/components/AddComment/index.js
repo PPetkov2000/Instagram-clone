@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { InputGroup, FormControl, Button } from "react-bootstrap";
 import { projectFirestore, timestamp } from "../../firebase/config";
 
-export default function AddComment({ postId, username }) {
+const AddComment = ({ postId, username }) => {
   const [comment, setComment] = useState("");
 
   const publishComment = () => {
@@ -46,3 +46,5 @@ export default function AddComment({ postId, username }) {
     </div>
   );
 }
+
+export default AddComment;
