@@ -6,7 +6,7 @@ import { FcLike } from "react-icons/fc";
 import { projectFirestore } from "../../firebase/config";
 import { GlobalStateContext } from "../../context";
 
-export default function PostNavbar({ postId }) {
+const PostNavbar = ({ postId }) => {
   const { username } = useContext(GlobalStateContext);
   const [active, setActive] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -107,3 +107,5 @@ export default function PostNavbar({ postId }) {
     </>
   );
 }
+
+export default PostNavbar;
