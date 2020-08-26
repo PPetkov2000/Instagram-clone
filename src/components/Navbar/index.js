@@ -13,7 +13,7 @@ import { BsCursor, BsHeart, BsCompass } from "react-icons/bs";
 import { Link, useHistory } from "react-router-dom";
 import NotificationsItem from "../NotificationsItem";
 
-export default function NavBar() {
+const NavBar = () => {
   const [notifications, setNotifications] = useState([
     { id: 1, user: "random_user", userImageUrl: "/images/user_icon.png" },
     { id: 2, user: "some_user", userImageUrl: "/images/user_icon.png" },
@@ -88,3 +88,5 @@ export default function NavBar() {
     </Navbar>
   );
 }
+
+export default NavBar;
