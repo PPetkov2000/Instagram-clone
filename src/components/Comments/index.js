@@ -4,7 +4,7 @@ import AddComment from "../AddComment";
 import { GlobalStateContext } from "../../context";
 import { projectFirestore } from "../../firebase/config";
 
-export default function Comments({ postId }) {
+export default function Comments({ postId, showAddComment = true }) {
   const context = useContext(GlobalStateContext);
   const [comments, setComments] = useState([]);
 
@@ -27,9 +27,11 @@ export default function Comments({ postId }) {
         {comments.map((comment) => {
           return <Comment key={comment.id} comment={comment} />;
         })}
-        <p className="text-muted">2 hours ago</p>
+        {showAddComment && <p className="text-muted">2 hours ago</p>}
       </div>
-      <AddComment postId={postId} username={context.username} />
+      {showAddComment && (
+        <AddComment postId={postId} username={context.username} />
+      )}
     </>
   );
 }

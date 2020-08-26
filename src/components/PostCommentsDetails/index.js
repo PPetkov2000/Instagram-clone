@@ -1,31 +1,51 @@
-import React from "react";
+import React, { useState, useContext } from "react";
+import { Link } from "react-router-dom";
 import { Card } from "react-bootstrap";
 import PostNavbar from "../PostNavbar";
 import Comments from "../Comments";
+import AddComment from "../AddComment";
+import { GlobalStateContext } from "../../context";
+import { projectFirestore } from "../../firebase/config";
 
-function PostCommentsDetails(props) {
-  console.log(props);
+const PostCommentsDetails = (props) => {
+  const context = useContext(GlobalStateContext);
+  const postId = props.match.params.id;
+  const [imageUrl, setImageUrl] = useState("");
+
+  projectFirestore
+    .collection("posts")
+    .doc(postId)
+    .get()
+    .then((post) => setImageUrl(post.data().imageUrl));
+
   return (
     <div className="details-container">
-      <img
-        src="https://firebasestorage.googleapis.com/v0/b/teammanager-a529e.appspot.com/o/desktop-image3.jpg?alt=media&token=924df7bb-456e-4691-9d18-37dc97be9906"
-        className="post-image"
-      />
+      <img src={imageUrl} alt="post" className="post-image" />
       <aside className="comments-section">
         <Card>
-          <Card.Header>
-            <strong>random_user:</strong> Follow
+          <Card.Header className="post-details-header">
+            <Card.Link href="#profile">
+              <Card.Img
+                variant="top"
+                src="/images/user_icon.png"
+                className="card-header-img"
+              />
+            </Card.Link>
+            <strong>random_user:</strong> <Link to="#follow">Follow</Link>
           </Card.Header>
-          <Card.Body>Bodyasdadasdsafasfasfsafafasfasf</Card.Body>
-          <Card.Footer>
-            <PostNavbar />
+          <Card.Body>
+            <Comments postId={postId} showAddComment={false} />
+          </Card.Body>
+          <Card.Footer className="post-details-footer">
+            <PostNavbar postId={postId} />
             <strong>1000 likes</strong>
             <p className="text-muted">2 hours ago</p>
+            <AddComment postId={postId} username={context.username} />
           </Card.Footer>
         </Card>
       </aside>
     </div>
   );
-}
+};
 
 export default PostCommentsDetails;
