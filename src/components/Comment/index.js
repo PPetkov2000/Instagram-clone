@@ -1,9 +1,11 @@
 import React from "react";
 
-export default function Comment({ comment }) {
+const Comment = ({ comment }) => {
   return (
     <p>
       <strong>{comment.creator}</strong> {comment.text}
     </p>
   );
 }
+
+export default Comment;

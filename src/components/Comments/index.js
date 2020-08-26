@@ -4,7 +4,11 @@ import AddComment from "../AddComment";
 import { GlobalStateContext } from "../../context";
 import { projectFirestore } from "../../firebase/config";
 
+<<<<<<< HEAD
 export default function Comments({ postId, showAddComment = true }) {
+=======
+const Comments = ({ postId }) => {
+>>>>>>> 5e8e555d71d2a7821387c40e550f69edbaf3fe77
   const context = useContext(GlobalStateContext);
   const [comments, setComments] = useState([]);
 
@@ -35,3 +39,5 @@ export default function Comments({ postId, showAddComment = true }) {
     </>
   );
 }
+
+export default Comments;

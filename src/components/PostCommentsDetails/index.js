@@ -18,6 +18,11 @@ const PostCommentsDetails = (props) => {
     .get()
     .then((post) => setImageUrl(post.data().imageUrl));
 
+<<<<<<< HEAD
+=======
+const PostCommentsDetails = (props) => {
+  console.log(props);
+>>>>>>> 5e8e555d71d2a7821387c40e550f69edbaf3fe77
   return (
     <div className="details-container">
       <img src={imageUrl} alt="post" className="post-image" />
