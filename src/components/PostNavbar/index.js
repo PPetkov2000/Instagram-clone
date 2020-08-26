@@ -1,13 +1,8 @@
 import React, { useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { Navbar, Nav, Modal, ListGroup } from "react-bootstrap";
-import {
-  BsHeart,
-  BsFillHeartFill,
-  BsCursor,
-  BsChat,
-  BsBookmark,
-} from "react-icons/bs";
+import { BsHeart, BsCursor, BsChat, BsBookmark } from "react-icons/bs";
+import { FcLike } from "react-icons/fc";
 import { projectFirestore } from "../../firebase/config";
 import { GlobalStateContext } from "../../context";
 
@@ -18,24 +13,29 @@ export default function PostNavbar({ postId }) {
   const history = useHistory();
 
   const likePost = () => {
-    setActive(true);
     projectFirestore
       .collection("posts")
       .doc(postId)
       .get()
       .then((result) => {
-        const likes = result.data().likes;
+        let likes = result.data().likes;
         if (likes.includes(username)) {
-          console.log("You have already liked that post!");
-          return;
+          likes = likes.filter((x) => x !== username);
+          setActive(false);
+        } else {
+          likes.push(username);
         }
-        likes.push(username);
         projectFirestore
           .collection("posts")
           .doc(postId)
           .update({ likes })
           .then(() => {
-            console.log("Liked Successfully!");
+            if (likes.includes(username)) {
+              setActive(true);
+              console.log("Liked Successfully!");
+            } else {
+              console.log("You disliked that post!");
+            }
           })
           .catch(console.error);
       })
@@ -49,12 +49,24 @@ export default function PostNavbar({ postId }) {
   const showOptions = () => setShowModal(true);
   const hideOptions = () => setShowModal(false);
 
+  projectFirestore
+    .collection("posts")
+    .doc(postId)
+    .get()
+    .then((res) => {
+      if (res.data().likes.includes(username)) {
+        setActive(true);
+      } else {
+        setActive(false);
+      }
+    });
+
   return (
     <>
       <Navbar className="posts-navbar">
         <Nav>
           <Nav.Link href="#like" className="nav-icon" onClick={likePost}>
-            {active ? <BsFillHeartFill /> : <BsHeart />}
+            {active ? <FcLike /> : <BsHeart />}
           </Nav.Link>
         </Nav>
         <Nav>
