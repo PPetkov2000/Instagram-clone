@@ -5,6 +5,7 @@ import Home from "./components/Home";
 import PostCommentsDetails from "./components/PostCommentsDetails";
 import Navbar from "./components/Navbar";
 import Messages from "./components/Messages";
+import Profile from "./components/Profile";
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
           path="/post-comments-details/:id"
           component={PostCommentsDetails}
         />
+        <Route path="/profile" component={Profile} />
       </Switch>
     </Router>
   );
