@@ -12,17 +12,6 @@ import { AiFillHome } from "react-icons/ai";
 import { BsCursor, BsHeart, BsCompass } from "react-icons/bs";
 import { Link, useHistory } from "react-router-dom";
 import NotificationsItem from "../NotificationsItem";
-<<<<<<< HEAD
-
-export default function NavBar() {
-  const [notifications, setNotifications] = useState([
-    { id: 1, user: "random_user", userImageUrl: "/images/user_icon.png" },
-    { id: 2, user: "some_user", userImageUrl: "/images/user_icon.png" },
-    { id: 3, user: "new_guy", userImageUrl: "/images/user_icon.png" },
-  ]);
-  const history = useHistory();
-
-=======
 
 const NavBar = () => {
   const [notifications, setNotifications] = useState([
@@ -32,7 +21,6 @@ const NavBar = () => {
   ]);
   const history = useHistory();
 
->>>>>>> 5e8e555d71d2a7821387c40e550f69edbaf3fe77
   return (
     <Navbar bg="light" variant="light" className="navbar">
       <Navbar.Brand>
@@ -99,6 +87,6 @@ const NavBar = () => {
       </Nav>
     </Navbar>
   );
-}
+};
 
 export default NavBar;
