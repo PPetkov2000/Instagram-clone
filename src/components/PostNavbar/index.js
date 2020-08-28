@@ -1,73 +1,95 @@
-import React from "react";
-import { BsGrid3X3, BsBookmark, BsPersonSquare, BsTv } from "react-icons/bs";
+import React, { useState, useContext } from "react";
+import { useHistory } from "react-router-dom";
+import { Navbar, Nav, Modal, ListGroup } from "react-bootstrap";
+import { BsHeart, BsCursor, BsChat, BsBookmark } from "react-icons/bs";
+import { FcLike } from "react-icons/fc";
+import { projectFirestore } from "../../firebase/config";
+import { GlobalStateContext } from "../../context";
+import PostNavbarModal from "../PostNavbarModal";
 
-const ProfileNavbar = ({
-  openPosts,
-  openChannel,
-  openSaved,
-  openTagged,
-  setOpenPosts,
-  setOpenChannel,
-  setOpenSaved,
-  setOpenTagged,
-}) => {
-  const openProfilePosts = () => {
-    setOpenPosts(true);
-    setOpenChannel(false);
-    setOpenSaved(false);
-    setOpenTagged(false);
+const PostNavbar = ({ postId }) => {
+  const { username } = useContext(GlobalStateContext);
+  const [active, setActive] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const history = useHistory();
+
+  const likePost = () => {
+    projectFirestore
+      .collection("posts")
+      .doc(postId)
+      .get()
+      .then((result) => {
+        let likes = result.data().likes;
+        if (likes.includes(username)) {
+          likes = likes.filter((x) => x !== username);
+          setActive(false);
+        } else {
+          likes.push(username);
+        }
+        projectFirestore
+          .collection("posts")
+          .doc(postId)
+          .update({ likes })
+          .then(() => {
+            if (likes.includes(username)) {
+              setActive(true);
+              console.log("Liked Successfully!");
+            } else {
+              console.log("You disliked that post!");
+            }
+          })
+          .catch(console.error);
+      })
+      .catch(console.error);
   };
-  const openProfileChannel = () => {
-    setOpenPosts(false);
-    setOpenChannel(true);
-    setOpenSaved(false);
-    setOpenTagged(false);
-  };
-  const openProfileSaved = () => {
-    setOpenPosts(false);
-    setOpenChannel(false);
-    setOpenSaved(true);
-    setOpenTagged(false);
-  };
-  const openProfileTagged = () => {
-    setOpenPosts(false);
-    setOpenChannel(false);
-    setOpenSaved(false);
-    setOpenTagged(true);
+
+  const showOptions = () => setShowModal(true);
+  const hideOptions = () => setShowModal(false);
+
+  projectFirestore
+    .collection("posts")
+    .doc(postId)
+    .get()
+    .then((res) => {
+      if (res.data().likes.includes(username)) {
+        setActive(true);
+      } else {
+        setActive(false);
+      }
+    });
+
+  const openPostDetails = () => {
+    history.push(`/post-comments-details/${postId}`);
   };
 
   return (
-    <nav className="user-profile-navbar">
-      <a
-        href="#posts"
-        className={openPosts && "profile-navbar-active"}
-        onClick={openProfilePosts}
-      >
-        <BsGrid3X3 className="user-profile-navbar-icon" /> posts
-      </a>
-      <a
-        href="#channel"
-        className={openChannel && "profile-navbar-active"}
-        onClick={openProfileChannel}
-      >
-        <BsTv className="user-profile-navbar-icon" /> igtv
-      </a>
-      <a
-        href="#saved"
-        className={openSaved && "profile-navbar-active"}
-        onClick={openProfileSaved}
-      >
-        <BsBookmark className="user-profile-navbar-icon" /> saved
-      </a>
-      <a
-        href="#tagged"
-        className={openTagged && "profile-navbar-active"}
-        onClick={openProfileTagged}
-      >
-        <BsPersonSquare className="user-profile-navbar-icon" /> tagged
-      </a>
-    </nav>
+    <>
+      <Navbar className="posts-navbar">
+        <Nav>
+          <Nav.Link href="#like" className="nav-icon" onClick={likePost}>
+            {active ? <FcLike /> : <BsHeart />}
+          </Nav.Link>
+        </Nav>
+        <Nav>
+          <Nav.Link className="nav-icon" onClick={openPostDetails}>
+            <BsChat />
+          </Nav.Link>
+        </Nav>
+        <Nav>
+          <Nav.Link href="#options" className="nav-icon" onClick={showOptions}>
+            <BsCursor />
+          </Nav.Link>
+        </Nav>
+        <Nav>
+          <Nav.Link href="#bookmark" className="nav-icon">
+            <BsBookmark />
+          </Nav.Link>
+        </Nav>
+      </Navbar>
+
+      <PostNavbarModal showModal={showModal} hideOptions={hideOptions} />
+    </>
   );
 };
 
-export default ProfileNavbar;
+export default PostNavbar;
