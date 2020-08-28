@@ -1,16 +1,5 @@
-<<<<<<< HEAD
-import React, { useState, useContext } from "react";
-import { useHistory } from "react-router-dom";
-import { Navbar, Nav } from "react-bootstrap";
-import { BsHeart, BsCursor, BsChat, BsBookmark } from "react-icons/bs";
-import { FcLike } from "react-icons/fc";
-import { projectFirestore } from "../../firebase/config";
-import { GlobalStateContext } from "../../context";
-import PostNavbarModal from "../PostNavbarModal";
-=======
 import React from "react";
 import { BsGrid3X3, BsBookmark, BsPersonSquare, BsTv } from "react-icons/bs";
->>>>>>> 469353415f39f02cc922b729abfa8e92fefd8d40
 
 const ProfileNavbar = ({
   openPosts,
@@ -48,34 +37,6 @@ const ProfileNavbar = ({
   };
 
   return (
-<<<<<<< HEAD
-    <>
-      <Navbar className="posts-navbar">
-        <Nav>
-          <Nav.Link href="#like" className="nav-icon" onClick={likePost}>
-            {active ? <FcLike /> : <BsHeart />}
-          </Nav.Link>
-        </Nav>
-        <Nav>
-          <Nav.Link className="nav-icon" onClick={openPostDetails}>
-            <BsChat />
-          </Nav.Link>
-        </Nav>
-        <Nav>
-          <Nav.Link href="#options" className="nav-icon" onClick={showOptions}>
-            <BsCursor />
-          </Nav.Link>
-        </Nav>
-        <Nav>
-          <Nav.Link href="#bookmark" className="nav-icon">
-            <BsBookmark />
-          </Nav.Link>
-        </Nav>
-      </Navbar>
-
-      <PostNavbarModal showModal={showModal} hideOptions={hideOptions} />
-    </>
-=======
     <nav className="user-profile-navbar">
       <a
         href="#posts"
@@ -106,7 +67,6 @@ const ProfileNavbar = ({
         <BsPersonSquare className="user-profile-navbar-icon" /> tagged
       </a>
     </nav>
->>>>>>> 469353415f39f02cc922b729abfa8e92fefd8d40
   );
 };
 
