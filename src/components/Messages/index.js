@@ -8,13 +8,23 @@ const Messages = () => {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: "what's up",
+      text: "what's up?",
       user: "random_user",
     },
     {
       id: 2,
       text: "hello there",
-      user: "some user",
+      user: "some_user",
+    },
+    {
+      id: 3,
+      text: "hey",
+      user: "random_user_one",
+    },
+    {
+      id: 4,
+      text: "how's it going?",
+      user: "some_user_one",
     },
   ]);
   const [messageClicked, setMessageClicked] = useState(false);

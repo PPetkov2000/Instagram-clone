@@ -25,6 +25,6 @@ const Posts = () => {
       })}
     </div>
   );
-}
+};
 
 export default Posts;

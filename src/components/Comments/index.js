@@ -4,16 +4,12 @@ import AddComment from "../AddComment";
 import { GlobalStateContext } from "../../context";
 import { projectFirestore } from "../../firebase/config";
 
-<<<<<<< HEAD
-export default function Comments({ postId, showAddComment = true }) {
-=======
-const Comments = ({ postId }) => {
->>>>>>> 5e8e555d71d2a7821387c40e550f69edbaf3fe77
+const Comments = ({ postId, showAddComment = true }) => {
   const context = useContext(GlobalStateContext);
   const [comments, setComments] = useState([]);
 
   useEffect(() => {
-    projectFirestore
+    const unsub = projectFirestore
       .collection("posts")
       .doc(postId)
       .collection("comments")
@@ -23,6 +19,8 @@ const Comments = ({ postId }) => {
           snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
         );
       });
+
+    return () => unsub();
   }, [postId]);
 
   return (
@@ -38,6 +36,6 @@ const Comments = ({ postId }) => {
       )}
     </>
   );
-}
+};
 
 export default Comments;

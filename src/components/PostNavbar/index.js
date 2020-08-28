@@ -1,10 +1,11 @@
 import React, { useState, useContext } from "react";
 import { useHistory } from "react-router-dom";
-import { Navbar, Nav, Modal, ListGroup } from "react-bootstrap";
+import { Navbar, Nav } from "react-bootstrap";
 import { BsHeart, BsCursor, BsChat, BsBookmark } from "react-icons/bs";
 import { FcLike } from "react-icons/fc";
 import { projectFirestore } from "../../firebase/config";
 import { GlobalStateContext } from "../../context";
+import PostNavbarModal from "../PostNavbarModal";
 
 const PostNavbar = ({ postId }) => {
   const { username } = useContext(GlobalStateContext);
@@ -86,26 +87,9 @@ const PostNavbar = ({ postId }) => {
         </Nav>
       </Navbar>
 
-      <Modal show={showModal} onHide={hideOptions}>
-        <Modal.Header closeButton>
-          <Modal.Title className="modal-title">Share</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="modal-body">
-          <ListGroup variant="flush">
-            <ListGroup.Item action>Share in Direct</ListGroup.Item>
-            <ListGroup.Item action>Share in Facebook</ListGroup.Item>
-            <ListGroup.Item action>Share in Messenger</ListGroup.Item>
-            <ListGroup.Item action>Share in Twitter</ListGroup.Item>
-            <ListGroup.Item action>Share with Email</ListGroup.Item>
-            <ListGroup.Item action>Copy</ListGroup.Item>
-            <ListGroup.Item action onClick={hideOptions}>
-              Cancel
-            </ListGroup.Item>
-          </ListGroup>
-        </Modal.Body>
-      </Modal>
+      <PostNavbarModal showModal={showModal} hideOptions={hideOptions} />
     </>
   );
-}
+};
 
 export default PostNavbar;
