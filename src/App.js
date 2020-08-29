@@ -6,6 +6,8 @@ import PostCommentsDetails from "./components/PostCommentsDetails";
 import Navbar from "./components/Navbar";
 import Messages from "./components/Messages";
 import Profile from "./components/Profile";
+import Register from "./components/Register";
+import Login from "./components/Login";
 
 const App = () => {
   return (
@@ -19,6 +21,8 @@ const App = () => {
           component={PostCommentsDetails}
         />
         <Route path="/profile" component={Profile} />
+        <Route path="/register" component={Register} />
+        <Route path="/login" component={Login} />
       </Switch>
     </Router>
   );
