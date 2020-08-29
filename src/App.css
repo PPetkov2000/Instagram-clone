@@ -9,6 +9,32 @@
   padding: 0;
 }
 
+.navbar-profile-img {
+  width: 30px;
+  height: 30px;
+  padding: 0.1rem;
+  border: 1px solid black;
+  border-radius: 50%;
+}
+
+.navbar-profile-popover {
+  width: 200px;
+}
+
+.navbar-profile-popover p {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-profile-popover-icon {
+  margin-right: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.navbar-profile-popover a:link {
+  text-decoration: none;
+}
+
 .main-container {
   display: flex;
   width: 65%;
@@ -385,4 +411,32 @@
 
 .profile-header-modal-title {
   margin-left: 30%;
+}
+
+.register-container,
+.login-container {
+  width: 70%;
+  margin: 0 auto;
+}
+
+.register-section,
+.login-section {
+  width: 350px;
+  margin: 0.7rem auto;
+  padding: 1rem 2.5rem;
+  text-align: center;
+  border: 1px solid lightgray;
+}
+
+.register-input,
+.login-input {
+  font-size: 0.9rem;
+}
+
+.registered-section,
+.loggedIn-section {
+  width: 350px;
+  margin: 0 auto;
+  text-align: center;
+  border: 1px solid lightgray;
 }
