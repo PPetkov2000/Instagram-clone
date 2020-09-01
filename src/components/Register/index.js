@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import { projectAuth } from "../../firebase/config";
+import { generateUserDocument } from "../../firebase/user";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -10,15 +11,30 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const history = useHistory();
 
-  const registerUser = (e) => {
+  const registerUser = async (e) => {
     e.preventDefault();
-    projectAuth
-      .createUserWithEmailAndPassword(email, password)
-      .then(() => {
-        console.log("Registered successfully!");
-        history.push("/");
-      })
-      .catch(console.error);
+
+    try {
+      const { user } = await projectAuth.createUserWithEmailAndPassword(
+        email,
+        password
+      );
+      generateUserDocument(user, {
+        fullName,
+        username,
+        profileImage: "/images/user_icon.png",
+        loggedIn: true,
+        followers: [],
+        following: [],
+        saved: [],
+        tagged: [],
+        notifications: [],
+      });
+      history.push("/");
+      console.log("Registered successfully!");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
