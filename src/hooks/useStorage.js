@@ -11,7 +11,7 @@ const useStorage = (file) => {
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
   const [url, setUrl] = useState(null);
-  const { username } = context;
+  const { username, uid } = context;
 
   useEffect(() => {
     const storageRef = projectStorage.ref(file.name);
@@ -29,18 +29,23 @@ const useStorage = (file) => {
       },
       async () => {
         const url = await storageRef.getDownloadURL();
+
         const createdAt = timestamp();
+
         imagesRef.add({ url, createdAt });
         postsRef.add({
-          username: username,
+          creator: uid,
+          username,
           userImageUrl: "/images/user_icon.png",
           imageUrl: url,
           timestamp: timestamp(),
+          likes: [],
         });
+
         setUrl(url);
       }
     );
-  }, [file, username]);
+  }, [file, username, uid]);
 
   return { progress, url, error };
 };
