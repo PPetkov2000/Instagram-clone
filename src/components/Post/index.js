@@ -10,6 +10,7 @@ import { projectFirestore } from "../../firebase/config";
 export default function Post({ post, userId }) {
   const [showModal, setShowModal] = useState(false);
   const [likes, setLikes] = useState([]);
+  const [creator, setCreator] = useState();
 
   const showOptions = () => setShowModal(true);
   const hideOptions = () => setShowModal(false);
@@ -20,6 +21,7 @@ export default function Post({ post, userId }) {
       .doc(post.id)
       .onSnapshot((res) => {
         setLikes(res.data().likes);
+        setCreator(res.data().creator);
       });
 
     return () => unsub();
@@ -29,7 +31,7 @@ export default function Post({ post, userId }) {
     <>
       <Card className="post mb-5">
         <Card.Header className="card-header">
-          <Link to="/profile">
+          <Link to={`/profile/${creator}`}>
             <Card.Img
               variant="top"
               src={post.post.userImageUrl}
@@ -62,6 +64,7 @@ export default function Post({ post, userId }) {
         hideOptions={hideOptions}
         postId={post.id}
         userId={userId}
+        postCreator={post.post.creator}
       />
     </>
   );
