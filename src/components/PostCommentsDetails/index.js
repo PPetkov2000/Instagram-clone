@@ -38,7 +38,6 @@ const PostCommentsDetails = (props) => {
       .doc(uid)
       .onSnapshot((snapshot) => {
         const following = snapshot.data().following;
-        const followers = snapshot.data().followers;
 
         if (following.includes(creator)) {
           setIsFollowing(true);
@@ -57,12 +56,39 @@ const PostCommentsDetails = (props) => {
       .get()
       .then((res) => {
         let following = res.data().following;
-        let followers = res.data().followers;
 
         if (!following.includes(creator)) {
           following.push(creator);
+          projectFirestore
+            .collection("instagramUsers")
+            .doc(creator)
+            .get()
+            .then((res) => {
+              const followers = res.data().followers;
+              followers.push(uid);
+
+              projectFirestore
+                .collection("instagramUsers")
+                .doc(creator)
+                .update({ followers });
+            })
+            .catch(console.error);
         } else {
           following = following.filter((x) => x !== creator);
+          projectFirestore
+            .collection("instagramUsers")
+            .doc(creator)
+            .get()
+            .then((res) => {
+              let followers = res.data().followers;
+              followers = followers.filter((x) => x !== uid);
+
+              projectFirestore
+                .collection("instagramUsers")
+                .doc(creator)
+                .update({ followers });
+            })
+            .catch(console.error);
         }
 
         return projectFirestore
@@ -72,13 +98,16 @@ const PostCommentsDetails = (props) => {
       });
   };
 
+  // TODO: if (userId === creator) remove subscribe and unsubscribe buttons
+  // There is also a bug when the page refreshes
+
   return (
     <div className="details-container">
       <img src={imageUrl} alt="post" className="post-image" />
       <aside className="comments-section">
         <Card>
           <Card.Header className="post-details-header">
-            <Link to="/profile">
+            <Link to={`/profile/${creator}`}>
               <Card.Img
                 variant="top"
                 src={profileImage}
