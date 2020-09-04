@@ -138,7 +138,10 @@ const PostCommentsDetails = (props) => {
               <strong>{likes.length} likes</strong>
             )}
             <p className="text-muted">2 hours ago</p>
-            <AddComment postId={postId} username={username} />
+            <AddComment
+              postId={postId}
+              username={context && context.username}
+            />
           </Card.Footer>
         </Card>
       </aside>
