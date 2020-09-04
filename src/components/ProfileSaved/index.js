@@ -1,9 +1,23 @@
 import React from "react";
 
-const ProfileSaved = () => {
+const ProfileSaved = ({ savedPosts }) => {
   return (
-    <div className="user-profile-activities-content">
-      <h3>Nothing Saved</h3>
+    <div className="profile-saved-img-container">
+      {savedPosts.length === 0 ? (
+        <h3>No saved posts</h3>
+      ) : (
+        savedPosts.map((post) => {
+          return (
+            <div key={post.id} className="profile-saved-img-div">
+              <img
+                src={post.imageUrl}
+                alt="saved post"
+                className="profile-saved-img"
+              />
+            </div>
+          );
+        })
+      )}
     </div>
   );
 };
