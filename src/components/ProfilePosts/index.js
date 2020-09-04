@@ -1,7 +1,7 @@
 import React from "react";
 
-const ProfilePosts = () => {
-  return (
+const ProfilePosts = ({ posts }) => {
+  return posts.length === 0 ? (
     <>
       <img src="/images/profile_image.jpg" alt="profile" />
       <div className="user-profile-activities-content">
@@ -17,6 +17,16 @@ const ProfilePosts = () => {
         </div>
       </div>
     </>
+  ) : (
+    <div className="profile-posts-img-container">
+      {posts.map((post) => {
+        return (
+          <div key={post.id} className="profile-posts-img-div">
+            <img src={post.imageUrl} alt={post} className="profile-posts-img" />
+          </div>
+        );
+      })}
+    </div>
   );
 };
 
