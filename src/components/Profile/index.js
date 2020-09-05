@@ -22,12 +22,14 @@ const Profile = (props) => {
         setOpenChannel={setOpenChannel}
         setOpenSaved={setOpenSaved}
         setOpenTagged={setOpenTagged}
+        userId={userId}
       />
       <ProfileActivities
         openPosts={openPosts}
         openChannel={openChannel}
         openSaved={openSaved}
         openTagged={openTagged}
+        userId={userId}
       />
       <footer className="user-profile-footer">
         <h5>@Instagram 2020</h5>
