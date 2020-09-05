@@ -8,23 +8,28 @@ import Messages from "./components/Messages";
 import Profile from "./components/Profile";
 import Register from "./components/Register";
 import Login from "./components/Login";
+import Context from "./context";
 
 const App = () => {
+  const userId = localStorage.getItem("userId");
+
   return (
-    <Router>
-      <Navbar />
-      <Switch>
-        <Route path="/" exact component={Home} />
-        <Route path="/messages" component={Messages} />
-        <Route
-          path="/post-comments-details/:id"
-          component={PostCommentsDetails}
-        />
-        <Route path="/profile" component={Profile} />
-        <Route path="/register" component={Register} />
-        <Route path="/login" component={Login} />
-      </Switch>
-    </Router>
+    <Context>
+      <Router>
+        <Navbar />
+        <Switch>
+          <Route path="/" exact component={Home} />
+          <Route path="/messages" component={Messages} />
+          <Route
+            path="/post-comments-details/:id"
+            component={PostCommentsDetails}
+          />
+          <Route path="/profile/:id" component={Profile} />
+          <Route path="/register" component={Register} />
+          <Route path="/login" component={Login} />
+        </Switch>
+      </Router>
+    </Context>
   );
 };
 
