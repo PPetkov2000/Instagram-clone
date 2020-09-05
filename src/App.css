@@ -295,6 +295,7 @@
 
 .user-profile-img {
   height: 100%;
+  width: 70%;
   border: 1px solid gray;
   border-radius: 50%;
   cursor: pointer;
@@ -316,12 +317,35 @@
   margin-bottom: 0;
 }
 
-.user-profile-edit-button {
+.user-profile-edit-button,
+.user-profile-message-button,
+.user-profile-follow-button-options,
+.user-profile-modal-button,
+.user-profile-follow-button {
   height: 2rem;
   margin: 0 1rem;
   font-weight: 600;
   border: 1px solid lightgray;
   border-radius: 0.3rem;
+}
+
+.user-profile-message-button {
+  margin-right: 0.5rem;
+}
+
+.user-profile-modal-button {
+  margin-left: 0.5rem;
+}
+
+.user-profile-follow-button-options {
+  width: 4rem;
+  margin: 0;
+}
+
+.user-profile-follow-button {
+  width: 6rem;
+  margin-left: 1rem;
+  margin-right: 0;
 }
 
 .user-profile-settings {
@@ -502,4 +526,38 @@
 .profile-saved-img {
   width: 100%;
   height: 100%;
+}
+
+.profile-header-modal-upload-item {
+  padding: 0;
+}
+
+.profile-header-modal-upload-label {
+  width: 100%;
+  font-weight: bold;
+  padding: 0.7rem;
+  margin-bottom: 0 !important;
+}
+
+.profile-header-modal-upload-input {
+  display: none;
+}
+
+.profile-header-user-status-header {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.profile-header-user-status-body,
+.profile-header-restrict-user-body {
+  text-align: center;
+}
+
+.profile-header-user-status-img {
+  width: 8rem;
+  height: 8rem;
+  margin: 1rem auto 2rem auto;
+  border: 1px solid lightgray;
+  border-radius: 50%;
 }
