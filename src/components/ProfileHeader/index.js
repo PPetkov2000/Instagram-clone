@@ -9,6 +9,7 @@ import ProfileHeaderUserStatusModal from "../ProfileHeaderUserStatusModal";
 import ProfileHeaderRestrictUserModal from "../ProfileHeaderRestrictUserModal";
 import { projectFirestore } from "../../firebase/config";
 import { GlobalStateContext } from "../../context";
+import requester from "../../firebase/requester";
 
 const ProfileHeader = ({ userId }) => {
   const [showProfileImage, setShowProfileImage] = useState(false);
@@ -49,10 +50,8 @@ const ProfileHeader = ({ userId }) => {
   const hideProfileRestrictUserModal = () => setShowProfileRestrictUser(false);
 
   useEffect(() => {
-    const unsub = projectFirestore
-      .collection("posts")
-      .where("creator", "==", userId)
-      .get()
+    const unsub = requester
+      .getByCriteria("posts", "creator", userId)
       .then((res) => {
         setUserPosts(res.docs.length);
       });
@@ -93,33 +92,34 @@ const ProfileHeader = ({ userId }) => {
   }, [uid, userId]);
 
   const followUser = () => {
-    projectFirestore
-      .collection("instagramUsers")
-      .doc(uid)
-      .get()
-      .then((res) => {
-        const following = res.data().following;
-        following.push(userId);
+    Promise.all([
+      requester.get("instagramUsers", uid),
+      requester.get("instagramUsers", userId),
+    ])
+      .then(([currentUser, followedUser]) => {
+        const currentUserFollowing = currentUser.data().following;
+        const followedUserFollowers = followedUser.data().followers;
 
-        projectFirestore
-          .collection("instagramUsers")
-          .doc(userId)
-          .get()
-          .then((res) => {
-            const followers = res.data().followers;
-            followers.push(uid);
+        currentUserFollowing.push(userId);
+        followedUserFollowers.push(uid);
 
-            projectFirestore
-              .collection("instagramUsers")
-              .doc(userId)
-              .update({ followers });
-          })
-          .catch(console.error);
-
-        return projectFirestore
-          .collection("instagramUsers")
-          .doc(uid)
-          .update({ following });
+        return Promise.all([
+          requester.update("instagramUsers", uid, {
+            following: currentUserFollowing,
+          }),
+          requester
+            .update("instagramUsers", userId, {
+              followers: followedUserFollowers,
+            })
+            .then(() => {
+              console.log(
+                `${currentUser.data().username} followed ${
+                  followedUser.data().username
+                }`
+              );
+            })
+            .catch(console.error),
+        ]);
       })
       .catch(console.error);
   };
@@ -221,6 +221,7 @@ const ProfileHeader = ({ userId }) => {
         showModal={showProfileFollowers}
         hideModal={hideProfileFollowersModal}
         userFollowers={userFollowers}
+        userFollowing={userFollowing}
       />
       <ProfileHeaderFollowingModal
         showModal={showProfileFollowing}
