@@ -1,17 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Modal } from "react-bootstrap";
 import { projectFirestore } from "../../firebase/config";
+import { GlobalStateContext } from "../../context";
 
-function ProfileHeaderFollowersModal({
-  showModal,
-  hideModal,
-  userFollowers,
-  userFollowing,
-}) {
-  const [followers, setFollowers] = useState([]);
+function ProfileHeaderFollowersModal({ showModal, hideModal, userFollowers }) {
+  const [postCreatorFollowers, setPostCreatorFollowers] = useState([]);
+  const [currentUserFollowing, setCurrentUserFollowing] = useState([]);
+  const context = useContext(GlobalStateContext);
+  const uid = context && context.uid;
 
   useEffect(() => {
-    setFollowers(
+    setPostCreatorFollowers(
       userFollowers.reduce((result, followerId) => {
         projectFirestore
           .collection("instagramUsers")
@@ -30,6 +29,19 @@ function ProfileHeaderFollowersModal({
     );
   }, [userFollowers]);
 
+  useEffect(() => {
+    if (uid == null) return;
+
+    const unsub = projectFirestore
+      .collection("instagramUsers")
+      .doc(uid)
+      .onSnapshot((snapshot) => {
+        setCurrentUserFollowing(snapshot.data().following);
+      });
+
+    return () => unsub();
+  }, [uid]);
+
   return (
     <Modal show={showModal} onHide={hideModal}>
       <Modal.Header closeButton>
@@ -38,7 +50,7 @@ function ProfileHeaderFollowersModal({
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {followers.map((follower) => {
+        {postCreatorFollowers.map((follower) => {
           return (
             <div
               key={follower.id}
@@ -53,14 +65,18 @@ function ProfileHeaderFollowersModal({
                 <strong>{follower.username}</strong>
                 <p className="text-muted">{follower.fullName}</p>
               </div>
-              {userFollowing.includes(follower.id) ? (
-                <button className="profile-header-followers-button">
-                  Following
-                </button>
-              ) : (
-                <button className="profile-header-followers-button">
-                  Follow
-                </button>
+              {uid !== follower.id && (
+                <>
+                  {currentUserFollowing.includes(follower.id) ? (
+                    <button className="profile-header-followers-button">
+                      Following
+                    </button>
+                  ) : (
+                    <button className="profile-header-followers-button">
+                      Follow
+                    </button>
+                  )}
+                </>
               )}
             </div>
           );
