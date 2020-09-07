@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Post from "../Post";
 import { projectFirestore } from "../../firebase/config";
 
-const Posts = () => {
+const Posts = ({ uid }) => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
@@ -10,9 +10,7 @@ const Posts = () => {
       .collection("posts")
       .orderBy("timestamp", "desc")
       .onSnapshot((snapshot) => {
-        setPosts(
-          snapshot.docs.map((doc) => ({ id: doc.id, post: doc.data() }))
-        );
+        setPosts(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
       });
 
     return () => unsub();
@@ -21,7 +19,7 @@ const Posts = () => {
   return (
     <div className="posts-container">
       {posts.map((post) => {
-        return <Post key={post.id} post={post} />;
+        return <Post key={post.id} post={post} uid={uid} />;
       })}
     </div>
   );
