@@ -6,6 +6,7 @@ import Comments from "../Comments";
 import AddComment from "../AddComment";
 import { GlobalStateContext } from "../../context";
 import { projectFirestore } from "../../firebase/config";
+import requester from "../../firebase/requester";
 
 const PostCommentsDetails = (props) => {
   const postId = props.match.params.id;
@@ -13,20 +14,20 @@ const PostCommentsDetails = (props) => {
   const [likes, setLikes] = useState([]);
   const [isFollowing, setIsFollowing] = useState(false);
   const [username, setUsername] = useState("");
-  const [creator, setCreator] = useState("");
+  const [creator, setCreator] = useState(null);
+  const [postCreatorProfileImage, setPostCreatorProfileImage] = useState();
   const context = useContext(GlobalStateContext);
   const uid = context && context.uid;
-  const profileImage = context && context.profileImage;
 
   useEffect(() => {
     const unsub = projectFirestore
       .collection("posts")
       .doc(postId)
-      .onSnapshot((res) => {
-        setLikes(res.data().likes);
-        setImageUrl(res.data().imageUrl);
-        setUsername(res.data().username);
-        setCreator(res.data().creator);
+      .onSnapshot((snapshot) => {
+        setLikes(snapshot.data().likes);
+        setImageUrl(snapshot.data().imageUrl);
+        setUsername(snapshot.data().username);
+        setCreator(snapshot.data().creator);
       });
 
     return () => unsub();
@@ -49,57 +50,55 @@ const PostCommentsDetails = (props) => {
     return () => unsub();
   }, [uid, creator]);
 
-  const followAndUnfollowUser = () => {
-    projectFirestore
+  useEffect(() => {
+    if (creator == null) return;
+
+    const unsub = projectFirestore
       .collection("instagramUsers")
-      .doc(uid)
-      .get()
-      .then((res) => {
-        let following = res.data().following;
-
-        if (!following.includes(creator)) {
-          following.push(creator);
-          projectFirestore
-            .collection("instagramUsers")
-            .doc(creator)
-            .get()
-            .then((res) => {
-              const followers = res.data().followers;
-              followers.push(uid);
-
-              projectFirestore
-                .collection("instagramUsers")
-                .doc(creator)
-                .update({ followers });
-            })
-            .catch(console.error);
-        } else {
-          following = following.filter((x) => x !== creator);
-          projectFirestore
-            .collection("instagramUsers")
-            .doc(creator)
-            .get()
-            .then((res) => {
-              let followers = res.data().followers;
-              followers = followers.filter((x) => x !== uid);
-
-              projectFirestore
-                .collection("instagramUsers")
-                .doc(creator)
-                .update({ followers });
-            })
-            .catch(console.error);
-        }
-
-        return projectFirestore
-          .collection("instagramUsers")
-          .doc(uid)
-          .update({ following });
+      .doc(creator)
+      .onSnapshot((snapshot) => {
+        setPostCreatorProfileImage(snapshot.data().profileImage);
       });
+
+    return () => unsub();
+  }, [creator]);
+
+  const followAndUnfollowUser = () => {
+    Promise.all([
+      requester.get("instagramUsers", uid),
+      requester.get("instagramUsers", creator),
+    ]).then(([currentUser, postCreatorUser]) => {
+      let currentUserFollowing = currentUser.data().following;
+      let postCreatorUserFollowers = postCreatorUser.data().followers;
+
+      if (!currentUserFollowing.includes(creator)) {
+        currentUserFollowing.push(creator);
+        postCreatorUserFollowers.push(uid);
+      } else {
+        currentUserFollowing = currentUserFollowing.filter(
+          (x) => x !== creator
+        );
+        postCreatorUserFollowers = postCreatorUserFollowers.filter(
+          (x) => x !== uid
+        );
+      }
+
+      return Promise.all([
+        requester.update("instagramUsers", uid, {
+          following: currentUserFollowing,
+        }),
+        requester.update("instagramUsers", creator, {
+          followers: postCreatorUserFollowers,
+        }),
+      ])
+        .then(() => {
+          console.log("Updated");
+        })
+        .catch(console.error);
+    });
   };
 
-  // TODO: if (userId === creator) remove subscribe and unsubscribe buttons
-  // There is also a bug when the page refreshes
+  // There is a bug when the page refreshes
 
   return (
     <div className="details-container">
@@ -110,19 +109,23 @@ const PostCommentsDetails = (props) => {
             <Link to={`/profile/${creator}`}>
               <Card.Img
                 variant="top"
-                src={profileImage}
+                src={postCreatorProfileImage}
                 className="card-header-img"
               />
             </Link>
-            <strong>{username}:</strong>{" "}
-            {isFollowing ? (
-              <Card.Link href="#unfollow" onClick={followAndUnfollowUser}>
-                Unfollow
-              </Card.Link>
-            ) : (
-              <Card.Link href="#follow" onClick={followAndUnfollowUser}>
-                Follow
-              </Card.Link>
+            <strong>{username} • </strong>
+            {uid !== creator && (
+              <>
+                {isFollowing ? (
+                  <Card.Link href="#unfollow" onClick={followAndUnfollowUser}>
+                    Unfollow
+                  </Card.Link>
+                ) : (
+                  <Card.Link href="#follow" onClick={followAndUnfollowUser}>
+                    Follow
+                  </Card.Link>
+                )}
+              </>
             )}
           </Card.Header>
           <Card.Body>
