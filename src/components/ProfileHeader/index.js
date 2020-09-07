@@ -107,19 +107,18 @@ const ProfileHeader = ({ userId }) => {
           requester.update("instagramUsers", uid, {
             following: currentUserFollowing,
           }),
-          requester
-            .update("instagramUsers", userId, {
-              followers: followedUserFollowers,
-            })
-            .then(() => {
-              console.log(
-                `${currentUser.data().username} followed ${
-                  followedUser.data().username
-                }`
-              );
-            })
-            .catch(console.error),
-        ]);
+          requester.update("instagramUsers", userId, {
+            followers: followedUserFollowers,
+          }),
+        ])
+          .then(() => {
+            console.log(
+              `${currentUser.data().username} followed ${
+                followedUser.data().username
+              }`
+            );
+          })
+          .catch(console.error);
       })
       .catch(console.error);
   };
@@ -221,7 +220,6 @@ const ProfileHeader = ({ userId }) => {
         showModal={showProfileFollowers}
         hideModal={hideProfileFollowersModal}
         userFollowers={userFollowers}
-        userFollowing={userFollowing}
       />
       <ProfileHeaderFollowingModal
         showModal={showProfileFollowing}
