@@ -7,10 +7,12 @@ import PostNavbar from "../PostNavbar";
 import PostModal from "../PostModal";
 import { projectFirestore } from "../../firebase/config";
 
-export default function Post({ post, userId }) {
+export default function Post({ post, uid }) {
   const [showModal, setShowModal] = useState(false);
   const [likes, setLikes] = useState([]);
-  const [creator, setCreator] = useState();
+  const [postCreator, setPostCreator] = useState();
+  const [currentUserProfileImage, setCurrentUserProfileImage] = useState();
+  const [postCreatorProfileImage, setPostCreatorProfileImage] = useState();
 
   const showOptions = () => setShowModal(true);
   const hideOptions = () => setShowModal(false);
@@ -19,31 +21,61 @@ export default function Post({ post, userId }) {
     const unsub = projectFirestore
       .collection("posts")
       .doc(post.id)
-      .onSnapshot((res) => {
-        setLikes(res.data().likes);
-        setCreator(res.data().creator);
+      .onSnapshot((snapshot) => {
+        setLikes(snapshot.data().likes);
+        setPostCreator(snapshot.data().creator);
       });
 
     return () => unsub();
   }, [post.id]);
 
+  useEffect(() => {
+    if (uid == null) return;
+
+    const unsub = projectFirestore
+      .collection("instagramUsers")
+      .doc(uid)
+      .onSnapshot((snapshot) => {
+        setCurrentUserProfileImage(snapshot.data().profileImage);
+      });
+
+    return () => unsub();
+  }, [uid]);
+
+  useEffect(() => {
+    if (postCreator == null) return;
+
+    const unsub = projectFirestore
+      .collection("instagramUsers")
+      .doc(postCreator)
+      .onSnapshot((snapshot) => {
+        setPostCreatorProfileImage(snapshot.data().profileImage);
+      });
+
+    return () => unsub();
+  }, [postCreator]);
+
   return (
     <>
       <Card className="post mb-5">
         <Card.Header className="card-header">
-          <Link to={`/profile/${creator}`}>
+          <Link to={`/profile/${postCreator}`}>
             <Card.Img
               variant="top"
-              src={post.post.userImageUrl}
+              src={
+                uid === postCreator
+                  ? currentUserProfileImage
+                  : postCreatorProfileImage
+              }
               className="card-header-img"
             />
           </Link>
-          <span>{post.post.username}</span>
+          <span>{post.username}</span>
           <Card.Link href="#properties" onClick={showOptions}>
             <BsThreeDots className="float-right text-dark navbar-header-dots" />
           </Card.Link>
         </Card.Header>
-        <Card.Img variant="top" src={post.post.imageUrl} height="600px" />
+        <Card.Img variant="top" src={post.imageUrl} height="600px" />
         <Card.Body>
           <PostNavbar postId={post.id} />
           <Card.Text className="mt-2 mb-2">
@@ -63,8 +95,8 @@ export default function Post({ post, userId }) {
         showModal={showModal}
         hideOptions={hideOptions}
         postId={post.id}
-        userId={userId}
-        postCreator={post.post.creator}
+        userId={uid}
+        postCreator={post.creator}
       />
     </>
   );
