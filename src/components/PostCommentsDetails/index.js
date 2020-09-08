@@ -16,6 +16,7 @@ const PostCommentsDetails = (props) => {
   const [username, setUsername] = useState("");
   const [creator, setCreator] = useState(null);
   const [postCreatorProfileImage, setPostCreatorProfileImage] = useState();
+  const [postUploadTime, setPostUploadTime] = useState("");
   const context = useContext(GlobalStateContext);
   const uid = context && context.uid;
 
@@ -62,6 +63,41 @@ const PostCommentsDetails = (props) => {
 
     return () => unsub();
   }, [creator]);
+
+  useEffect(() => {
+    requester
+      .get("posts", postId)
+      .then((res) => {
+        const currentDate = new Date().getTime();
+        const postDate = res.data().timestamp.toDate().getTime();
+        const diff = currentDate - postDate;
+        const timePastInDays = new Date(diff).getUTCDate() - 1;
+        const timePastInHours = new Date(diff).getUTCHours();
+        const timePastInMinutes = new Date(diff).getUTCMinutes();
+        const timePastInSeconds = new Date(diff).getUTCSeconds();
+
+        if (timePastInDays === 0) {
+          if (timePastInHours === 0) {
+            if (timePastInMinutes === 0) {
+              setPostUploadTime(`${timePastInSeconds} seconds ago`);
+            } else if (timePastInMinutes === 1) {
+              setPostUploadTime(`${timePastInMinutes} minute ago`);
+            } else {
+              setPostUploadTime(`${timePastInMinutes} minutes ago`);
+            }
+          } else if (timePastInHours === 1) {
+            setPostUploadTime(`${timePastInHours} hour ago`);
+          } else {
+            setPostUploadTime(`${timePastInHours} hours ago`);
+          }
+        } else if (timePastInDays === 1) {
+          setPostUploadTime(`${timePastInDays} day ago`);
+        } else {
+          setPostUploadTime(`${timePastInDays} days ago`);
+        }
+      })
+      .catch(console.error);
+  }, [postId]);
 
   const followAndUnfollowUser = () => {
     Promise.all([
@@ -140,7 +176,7 @@ const PostCommentsDetails = (props) => {
             ) : (
               <strong>{likes.length} likes</strong>
             )}
-            <p className="text-muted">2 hours ago</p>
+            <p className="text-muted">{postUploadTime}</p>
             <AddComment
               postId={postId}
               username={context && context.username}
