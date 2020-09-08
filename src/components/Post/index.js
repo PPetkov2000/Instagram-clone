@@ -13,6 +13,7 @@ export default function Post({ post, uid }) {
   const [postCreator, setPostCreator] = useState();
   const [currentUserProfileImage, setCurrentUserProfileImage] = useState();
   const [postCreatorProfileImage, setPostCreatorProfileImage] = useState();
+  const [postUploadTime, setPostUploadTime] = useState("");
 
   const showOptions = () => setShowModal(true);
   const hideOptions = () => setShowModal(false);
@@ -24,6 +25,34 @@ export default function Post({ post, uid }) {
       .onSnapshot((snapshot) => {
         setLikes(snapshot.data().likes);
         setPostCreator(snapshot.data().creator);
+
+        const currentDate = new Date().getTime();
+        const postDate = snapshot.data().timestamp.toDate().getTime();
+        const diff = currentDate - postDate;
+        const timePastInDays = new Date(diff).getUTCDate() - 1;
+        const timePastInHours = new Date(diff).getUTCHours();
+        const timePastInMinutes = new Date(diff).getUTCMinutes();
+        const timePastInSeconds = new Date(diff).getUTCSeconds();
+
+        if (timePastInDays === 0) {
+          if (timePastInHours === 0) {
+            if (timePastInMinutes === 0) {
+              setPostUploadTime(`${timePastInSeconds} seconds ago`);
+            } else if (timePastInMinutes === 1) {
+              setPostUploadTime(`${timePastInMinutes} minute ago`);
+            } else {
+              setPostUploadTime(`${timePastInMinutes} minutes ago`);
+            }
+          } else if (timePastInHours === 1) {
+            setPostUploadTime(`${timePastInHours} hour ago`);
+          } else {
+            setPostUploadTime(`${timePastInHours} hours ago`);
+          }
+        } else if (timePastInDays === 1) {
+          setPostUploadTime(`${timePastInDays} day ago`);
+        } else {
+          setPostUploadTime(`${timePastInDays} days ago`);
+        }
       });
 
     return () => unsub();
@@ -87,7 +116,7 @@ export default function Post({ post, uid }) {
               <strong>{likes.length} likes</strong>
             )}
           </Card.Text>
-          <Comments postId={post.id} />
+          <Comments postId={post.id} postUploadTime={postUploadTime} />
         </Card.Body>
       </Card>
 
