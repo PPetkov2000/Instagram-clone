@@ -4,9 +4,9 @@ import AddComment from "../AddComment";
 import { GlobalStateContext } from "../../context";
 import { projectFirestore } from "../../firebase/config";
 
-const Comments = ({ postId, showAddComment = true }) => {
-  const context = useContext(GlobalStateContext);
+const Comments = ({ postId, showAddComment = true, postUploadTime }) => {
   const [comments, setComments] = useState([]);
+  const context = useContext(GlobalStateContext);
 
   useEffect(() => {
     const unsub = projectFirestore
@@ -26,13 +26,15 @@ const Comments = ({ postId, showAddComment = true }) => {
   return (
     <>
       <div className="comments-container">
-        {comments.map((comment) => {
-          return <Comment key={comment.id} comment={comment} />;
-        })}
-        {showAddComment && <p className="text-muted">2 hours ago</p>}
+        {comments.length === 0
+          ? "No comments yet!"
+          : comments.map((comment) => {
+              return <Comment key={comment.id} comment={comment} />;
+            })}
+        {showAddComment && <p className="text-muted">{postUploadTime}</p>}
       </div>
       {showAddComment && (
-        <AddComment postId={postId} username={context.username} />
+        <AddComment postId={postId} username={context && context.username} />
       )}
     </>
   );
