@@ -1,62 +1,94 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { Navbar, Nav, Modal, ListGroup } from "react-bootstrap";
-import { BsHeart, BsCursor, BsChat, BsBookmark } from "react-icons/bs";
+import { Navbar, Nav } from "react-bootstrap";
+import {
+  BsHeart,
+  BsCursor,
+  BsChat,
+  BsBookmark,
+  BsFillBookmarkFill,
+} from "react-icons/bs";
 import { FcLike } from "react-icons/fc";
 import { projectFirestore } from "../../firebase/config";
 import { GlobalStateContext } from "../../context";
 import PostNavbarModal from "../PostNavbarModal";
+import requester from "../../firebase/requester";
 
 const PostNavbar = ({ postId }) => {
-  const { username } = useContext(GlobalStateContext);
-  const [active, setActive] = useState(false);
+  const [liked, setLiked] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const history = useHistory();
+  const context = useContext(GlobalStateContext);
+  const email = context && context.email;
+  const uid = context && context.uid;
 
-  const likePost = () => {
-    projectFirestore
+  useEffect(() => {
+    const unsub = projectFirestore
       .collection("posts")
       .doc(postId)
-      .get()
-      .then((result) => {
-        let likes = result.data().likes;
-        if (likes.includes(username)) {
-          likes = likes.filter((x) => x !== username);
-          setActive(false);
+      .onSnapshot((snapshot) => {
+        if (snapshot.data().likes.includes(email)) {
+          setLiked(true);
         } else {
-          likes.push(username);
+          setLiked(false);
         }
-        projectFirestore
-          .collection("posts")
-          .doc(postId)
-          .update({ likes })
-          .then(() => {
-            if (likes.includes(username)) {
-              setActive(true);
-              console.log("Liked Successfully!");
-            } else {
-              console.log("You disliked that post!");
-            }
-          })
-          .catch(console.error);
+      });
+
+    return () => unsub();
+  }, [postId, email]);
+
+  useEffect(() => {
+    const unsub = projectFirestore
+      .collection("instagramUsers")
+      .doc(uid)
+      .onSnapshot((snapshot) => {
+        if (snapshot.data().saved.includes(postId)) {
+          setSaved(true);
+        } else {
+          setSaved(false);
+        }
+      });
+
+    return () => unsub();
+  }, [uid, postId]);
+
+  const likePost = () => {
+    requester
+      .get("posts", postId)
+      .then((res) => {
+        let likes = res.data().likes;
+
+        if (!likes.includes(email)) {
+          likes.push(email);
+        } else {
+          likes = likes.filter((x) => x !== email);
+        }
+
+        return requester.update("posts", postId, { likes });
+      })
+      .catch(console.error);
+  };
+
+  const saveAndUnSavePost = () => {
+    requester
+      .get("instagramUsers", uid)
+      .then((res) => {
+        let saved = res.data().saved;
+
+        if (!saved.includes(postId)) {
+          saved.push(postId);
+        } else {
+          saved = saved.filter((x) => x !== postId);
+        }
+
+        return requester.update("instagramUsers", uid, { saved });
       })
       .catch(console.error);
   };
 
   const showOptions = () => setShowModal(true);
   const hideOptions = () => setShowModal(false);
-
-  projectFirestore
-    .collection("posts")
-    .doc(postId)
-    .get()
-    .then((res) => {
-      if (res.data().likes.includes(username)) {
-        setActive(true);
-      } else {
-        setActive(false);
-      }
-    });
 
   const openPostDetails = () => {
     history.push(`/post-comments-details/${postId}`);
@@ -67,7 +99,7 @@ const PostNavbar = ({ postId }) => {
       <Navbar className="posts-navbar">
         <Nav>
           <Nav.Link href="#like" className="nav-icon" onClick={likePost}>
-            {active ? <FcLike /> : <BsHeart />}
+            {liked ? <FcLike /> : <BsHeart />}
           </Nav.Link>
         </Nav>
         <Nav>
@@ -81,8 +113,12 @@ const PostNavbar = ({ postId }) => {
           </Nav.Link>
         </Nav>
         <Nav>
-          <Nav.Link href="#bookmark" className="nav-icon">
-            <BsBookmark />
+          <Nav.Link
+            href="#bookmark"
+            className="nav-icon"
+            onClick={saveAndUnSavePost}
+          >
+            {saved ? <BsFillBookmarkFill /> : <BsBookmark />}
           </Nav.Link>
         </Nav>
       </Navbar>
