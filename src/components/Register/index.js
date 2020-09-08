@@ -23,13 +23,14 @@ const Register = () => {
         fullName,
         username,
         profileImage: "/images/user_icon.png",
-        loggedIn: true,
         followers: [],
         following: [],
         saved: [],
         tagged: [],
+        suggestions: [],
         notifications: [],
       });
+      localStorage.setItem("userId", user.uid);
       history.push("/");
       console.log("Registered successfully!");
     } catch (error) {
