@@ -27,7 +27,6 @@ const Register = () => {
         following: [],
         saved: [],
         tagged: [],
-        suggestions: [],
         notifications: [],
       });
       localStorage.setItem("userId", user.uid);
