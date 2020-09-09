@@ -8,11 +8,9 @@ import Messages from "./components/Messages";
 import Profile from "./components/Profile";
 import Register from "./components/Register";
 import Login from "./components/Login";
-import Context from "./context";
+import Context from "./utils/context";
 
 const App = () => {
-  const userId = localStorage.getItem("userId");
-
   return (
     <Context>
       <Router>
