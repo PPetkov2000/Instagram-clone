@@ -4,9 +4,10 @@ import { Card } from "react-bootstrap";
 import PostNavbar from "../PostNavbar";
 import Comments from "../Comments";
 import AddComment from "../AddComment";
-import { GlobalStateContext } from "../../context";
+import { GlobalStateContext } from "../../utils/context";
 import { projectFirestore } from "../../firebase/config";
 import requester from "../../firebase/requester";
+import formatTimestamp from "../../utils/formatTimestamp";
 
 const PostCommentsDetails = (props) => {
   const postId = props.match.params.id;
@@ -68,33 +69,7 @@ const PostCommentsDetails = (props) => {
     requester
       .get("posts", postId)
       .then((res) => {
-        const currentDate = new Date().getTime();
-        const postDate = res.data().timestamp.toDate().getTime();
-        const diff = currentDate - postDate;
-        const timePastInDays = new Date(diff).getUTCDate() - 1;
-        const timePastInHours = new Date(diff).getUTCHours();
-        const timePastInMinutes = new Date(diff).getUTCMinutes();
-        const timePastInSeconds = new Date(diff).getUTCSeconds();
-
-        if (timePastInDays === 0) {
-          if (timePastInHours === 0) {
-            if (timePastInMinutes === 0) {
-              setPostUploadTime(`${timePastInSeconds} seconds ago`);
-            } else if (timePastInMinutes === 1) {
-              setPostUploadTime(`${timePastInMinutes} minute ago`);
-            } else {
-              setPostUploadTime(`${timePastInMinutes} minutes ago`);
-            }
-          } else if (timePastInHours === 1) {
-            setPostUploadTime(`${timePastInHours} hour ago`);
-          } else {
-            setPostUploadTime(`${timePastInHours} hours ago`);
-          }
-        } else if (timePastInDays === 1) {
-          setPostUploadTime(`${timePastInDays} day ago`);
-        } else {
-          setPostUploadTime(`${timePastInDays} days ago`);
-        }
+        setPostUploadTime(formatTimestamp(res.data().timestamp));
       })
       .catch(console.error);
   }, [postId]);
@@ -106,16 +81,27 @@ const PostCommentsDetails = (props) => {
     ]).then(([currentUser, postCreatorUser]) => {
       let currentUserFollowing = currentUser.data().following;
       let postCreatorUserFollowers = postCreatorUser.data().followers;
+      let postCreatorUserNotifications = postCreatorUser.data().notifications;
 
       if (!currentUserFollowing.includes(creator)) {
         currentUserFollowing.push(creator);
         postCreatorUserFollowers.push(uid);
+        postCreatorUserNotifications.push({
+          id: currentUser.id,
+          username: currentUser.data().username,
+          profileImage: currentUser.data().profileImage,
+          timestamp: new Date(),
+          type: "follower",
+        });
       } else {
         currentUserFollowing = currentUserFollowing.filter(
           (x) => x !== creator
         );
         postCreatorUserFollowers = postCreatorUserFollowers.filter(
           (x) => x !== uid
+        );
+        postCreatorUserNotifications = postCreatorUserNotifications.filter(
+          (x) => x.id !== uid
         );
       }
 
@@ -125,12 +111,9 @@ const PostCommentsDetails = (props) => {
         }),
         requester.update("instagramUsers", creator, {
           followers: postCreatorUserFollowers,
+          notifications: postCreatorUserNotifications,
         }),
-      ])
-        .then(() => {
-          console.log("Updated");
-        })
-        .catch(console.error);
+      ]);
     });
   };
 
