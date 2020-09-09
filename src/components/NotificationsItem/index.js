@@ -1,16 +1,17 @@
 import React from "react";
 import { ListGroup } from "react-bootstrap";
 
-function NotificationsItem({ notification }) {
+function NotificationsItem({ notification, notificationTimestamp }) {
   return (
-    <ListGroup.Item action className="popover-item">
+    <ListGroup.Item action className="notifications-popover-item">
       <img
-        src={notification.userImageUrl}
+        src={notification.profileImage}
         alt="user_icon"
-        className="popover-img"
+        className="notifications-popover-img"
       />
       <p>
-        <strong>{notification.user}</strong> tagged you in a comment
+        <strong>{notification.username}</strong> followed you{" "}
+        {notificationTimestamp}
       </p>
     </ListGroup.Item>
   );
