@@ -6,6 +6,7 @@ import Comments from "../Comments";
 import PostNavbar from "../PostNavbar";
 import PostModal from "../PostModal";
 import { projectFirestore } from "../../firebase/config";
+import formatTimestamp from "../../utils/formatTimestamp";
 
 export default function Post({ post, uid }) {
   const [showModal, setShowModal] = useState(false);
@@ -25,34 +26,7 @@ export default function Post({ post, uid }) {
       .onSnapshot((snapshot) => {
         setLikes(snapshot.data().likes);
         setPostCreator(snapshot.data().creator);
-
-        const currentDate = new Date().getTime();
-        const postDate = snapshot.data().timestamp.toDate().getTime();
-        const diff = currentDate - postDate;
-        const timePastInDays = new Date(diff).getUTCDate() - 1;
-        const timePastInHours = new Date(diff).getUTCHours();
-        const timePastInMinutes = new Date(diff).getUTCMinutes();
-        const timePastInSeconds = new Date(diff).getUTCSeconds();
-
-        if (timePastInDays === 0) {
-          if (timePastInHours === 0) {
-            if (timePastInMinutes === 0) {
-              setPostUploadTime(`${timePastInSeconds} seconds ago`);
-            } else if (timePastInMinutes === 1) {
-              setPostUploadTime(`${timePastInMinutes} minute ago`);
-            } else {
-              setPostUploadTime(`${timePastInMinutes} minutes ago`);
-            }
-          } else if (timePastInHours === 1) {
-            setPostUploadTime(`${timePastInHours} hour ago`);
-          } else {
-            setPostUploadTime(`${timePastInHours} hours ago`);
-          }
-        } else if (timePastInDays === 1) {
-          setPostUploadTime(`${timePastInDays} day ago`);
-        } else {
-          setPostUploadTime(`${timePastInDays} days ago`);
-        }
+        setPostUploadTime(formatTimestamp(snapshot.data().timestamp));
       });
 
     return () => unsub();
