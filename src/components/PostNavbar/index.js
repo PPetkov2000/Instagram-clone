@@ -10,7 +10,7 @@ import {
 } from "react-icons/bs";
 import { FcLike } from "react-icons/fc";
 import { projectFirestore } from "../../firebase/config";
-import { GlobalStateContext } from "../../context";
+import { GlobalStateContext } from "../../utils/context";
 import PostNavbarModal from "../PostNavbarModal";
 import requester from "../../firebase/requester";
 
@@ -53,7 +53,7 @@ const PostNavbar = ({ postId }) => {
     return () => unsub();
   }, [uid, postId]);
 
-  const likePost = () => {
+  const likeAndDislikePost = () => {
     requester
       .get("posts", postId)
       .then((res) => {
@@ -98,7 +98,11 @@ const PostNavbar = ({ postId }) => {
     <>
       <Navbar className="posts-navbar">
         <Nav>
-          <Nav.Link href="#like" className="nav-icon" onClick={likePost}>
+          <Nav.Link
+            href="#like"
+            className="nav-icon"
+            onClick={likeAndDislikePost}
+          >
             {liked ? <FcLike /> : <BsHeart />}
           </Nav.Link>
         </Nav>
