@@ -37,7 +37,9 @@ const ProfileActivities = ({
       .collection("instagramUsers")
       .doc(userId)
       .onSnapshot((snapshot) => {
-        setSaved(snapshot.data().saved);
+        if (snapshot.data()) {
+          setSaved(snapshot.data().saved);
+        }
       });
 
     return () => unsub();
@@ -63,7 +65,7 @@ const ProfileActivities = ({
       {openPosts && <ProfilePosts posts={posts} />}
       {openChannel && <ProfileChannel />}
       {openSaved && <ProfileSaved savedPosts={savedPosts} />}
-      {openTagged && <ProfileTagged />}
+      {openTagged && <ProfileTagged userId={userId} />}
     </div>
   );
 };
