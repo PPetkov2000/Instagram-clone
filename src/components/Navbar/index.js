@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Navbar,
   Nav,
@@ -19,19 +19,37 @@ import {
 } from "react-icons/bs";
 import { Link, useHistory } from "react-router-dom";
 import NotificationsItem from "../NotificationsItem";
-import { projectAuth } from "../../firebase/config";
+import { projectAuth, projectFirestore } from "../../firebase/config";
+import { GlobalStateContext } from "../../utils/context";
 
 const NavBar = () => {
-  const [notifications, setNotifications] = useState([
-    { id: 1, user: "random_user", userImageUrl: "/images/user_icon.png" },
-    { id: 2, user: "some_user", userImageUrl: "/images/user_icon.png" },
-    { id: 3, user: "new_guy", userImageUrl: "/images/user_icon.png" },
-  ]);
+  const [notifications, setNotifications] = useState([]);
   const history = useHistory();
+  const context = useContext(GlobalStateContext);
+  const uid = context && context.uid;
+
+  useEffect(() => {
+    if (uid == null) return;
+
+    const unsub = projectFirestore
+      .collection("instagramUsers")
+      .doc(uid)
+      .onSnapshot((snapshot) => {
+        setNotifications(snapshot.data().notifications.slice(0, 5));
+      });
+
+    return () => unsub();
+  }, [uid]);
 
   const logoutUser = () => {
-    projectAuth.signOut();
-    history.push("/login");
+    projectAuth
+      .signOut()
+      .then(() => {
+        localStorage.removeItem("userId");
+        history.push("/login");
+        console.log("You have logged out!");
+      })
+      .catch(console.error);
   };
 
   return (
@@ -84,7 +102,7 @@ const NavBar = () => {
                     {notifications.map((notification) => {
                       return (
                         <NotificationsItem
-                          key={notification.id}
+                          key={notification.timestamp}
                           notification={notification}
                         />
                       );
@@ -105,24 +123,18 @@ const NavBar = () => {
             overlay={
               <Popover className="navbar-profile-popover">
                 <Popover.Content>
-                  <p>
+                  <Link to={`/profile/${context && context.uid}`}>
                     <BsPeopleCircle className="navbar-profile-popover-icon" />
-                    <Link to="/profile" className="text-dark">
-                      Profile
-                    </Link>
-                  </p>
-                  <p>
+                    Profile
+                  </Link>
+                  <Link to="/saved">
                     <BsBookmark className="navbar-profile-popover-icon" />
-                    <Link to="/saved" className="text-dark">
-                      Saved
-                    </Link>
-                  </p>
-                  <p>
+                    Saved
+                  </Link>
+                  <Link to="/settings">
                     <BsGearWide className="navbar-profile-popover-icon" />
-                    <Link to="/settings" className="text-dark">
-                      Settings
-                    </Link>
-                  </p>
+                    Settings
+                  </Link>
                   <p style={{ cursor: "pointer" }} onClick={logoutUser}>
                     Logout
                   </p>
