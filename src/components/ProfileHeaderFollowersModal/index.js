@@ -27,8 +27,6 @@ function ProfileHeaderFollowersModal({ showModal, hideModal, userFollowers }) {
     );
   }, [userFollowers]);
 
-  console.log(postCreatorFollowers);
-
   useEffect(() => {
     if (uid == null) return;
 
