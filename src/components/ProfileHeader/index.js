@@ -8,7 +8,7 @@ import ProfileHeaderFollowingModal from "../ProfileHeaderFollowingModal";
 import ProfileHeaderUserStatusModal from "../ProfileHeaderUserStatusModal";
 import ProfileHeaderRestrictUserModal from "../ProfileHeaderRestrictUserModal";
 import { projectFirestore } from "../../firebase/config";
-import { GlobalStateContext } from "../../context";
+import { GlobalStateContext } from "../../utils/context";
 import requester from "../../firebase/requester";
 
 const ProfileHeader = ({ userId }) => {
@@ -60,13 +60,17 @@ const ProfileHeader = ({ userId }) => {
   }, [userId]);
 
   useEffect(() => {
+    if (!userId) return;
+
     const unsub = projectFirestore
       .collection("instagramUsers")
       .doc(userId)
       .onSnapshot((snapshot) => {
-        setUserFollowers(snapshot.data().followers);
-        setUserFollowing(snapshot.data().following);
-        setCurrentUser(snapshot.data());
+        if (snapshot.data()) {
+          setUserFollowers(snapshot.data().followers);
+          setUserFollowing(snapshot.data().following);
+          setCurrentUser(snapshot.data());
+        }
       });
 
     return () => unsub();
@@ -99,9 +103,17 @@ const ProfileHeader = ({ userId }) => {
       .then(([currentUser, followedUser]) => {
         const currentUserFollowing = currentUser.data().following;
         const followedUserFollowers = followedUser.data().followers;
+        const followedUserNotifications = followedUser.data().notifications;
 
         currentUserFollowing.push(userId);
         followedUserFollowers.push(uid);
+        followedUserNotifications.push({
+          id: currentUser.id,
+          username: currentUser.data().username,
+          profileImage: currentUser.data().profileImage,
+          timestamp: new Date(),
+          type: "follower",
+        });
 
         return Promise.all([
           requester.update("instagramUsers", uid, {
@@ -109,16 +121,9 @@ const ProfileHeader = ({ userId }) => {
           }),
           requester.update("instagramUsers", userId, {
             followers: followedUserFollowers,
+            notifications: followedUserNotifications,
           }),
-        ])
-          .then(() => {
-            console.log(
-              `${currentUser.data().username} followed ${
-                followedUser.data().username
-              }`
-            );
-          })
-          .catch(console.error);
+        ]);
       })
       .catch(console.error);
   };
