@@ -35,7 +35,7 @@ const NavBar = () => {
       .collection("instagramUsers")
       .doc(uid)
       .onSnapshot((snapshot) => {
-        setNotifications(snapshot.data().notifications.slice(0, 5));
+        setNotifications(snapshot.data().notifications);
       });
 
     return () => unsub();
@@ -99,14 +99,17 @@ const NavBar = () => {
               <Popover>
                 <Popover.Content>
                   <ListGroup variant="flush">
-                    {notifications.map((notification) => {
-                      return (
-                        <NotificationsItem
-                          key={notification.timestamp}
-                          notification={notification}
-                        />
-                      );
-                    })}
+                    {notifications
+                      .sort((a, b) => b.timestamp - a.timestamp)
+                      .slice(0, 5)
+                      .map((notification) => {
+                        return (
+                          <NotificationsItem
+                            key={notification.timestamp}
+                            notification={notification}
+                          />
+                        );
+                      })}
                   </ListGroup>
                 </Popover.Content>
               </Popover>
