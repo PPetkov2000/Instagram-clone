@@ -1,21 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { InputGroup, FormControl, Button } from "react-bootstrap";
 import { projectFirestore, timestamp } from "../../firebase/config";
+import { GlobalStateContext } from "../../utils/context";
+import requester from "../../firebase/requester";
 
-const AddComment = ({ postId, username }) => {
+const AddComment = ({ post }) => {
   const [comment, setComment] = useState("");
+  const context = useContext(GlobalStateContext);
 
   const publishComment = () => {
     projectFirestore
       .collection("posts")
-      .doc(postId)
+      .doc(post.id)
       .collection("comments")
       .add({
         text: comment,
-        creator: username,
-        postId: postId,
+        creator: context && context.username,
+        postId: post.id,
         timestamp: timestamp(),
-      });
+      })
+      .then(() => {
+        requester
+          .get("instagramUsers", post.creator)
+          .then((res) => {
+            const notifications = res.data().notifications;
+
+            notifications.push({
+              id: context && context.uid,
+              username: context && context.username,
+              profileImage: context && context.profileImage,
+              timestamp: new Date(),
+              type: "comment",
+              post: post,
+            });
+
+            return requester.update("instagramUsers", post.creator, {
+              notifications,
+            });
+          })
+          .catch(console.error);
+      })
+      .catch(console.error);
 
     setComment("");
   };
@@ -45,6 +70,6 @@ const AddComment = ({ postId, username }) => {
       </InputGroup>
     </div>
   );
-}
+};
 
 export default AddComment;
