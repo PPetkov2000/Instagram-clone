@@ -80,7 +80,7 @@ export default function Post({ post, uid }) {
         </Card.Header>
         <Card.Img variant="top" src={post.imageUrl} height="600px" />
         <Card.Body>
-          <PostNavbar postId={post.id} />
+          <PostNavbar postId={post.id} postCreator={post.creator} />
           <Card.Text className="mt-2 mb-2">
             {likes.length === 0 ? (
               <strong>No likes</strong>
@@ -90,7 +90,7 @@ export default function Post({ post, uid }) {
               <strong>{likes.length} likes</strong>
             )}
           </Card.Text>
-          <Comments postId={post.id} postUploadTime={postUploadTime} />
+          <Comments postUploadTime={postUploadTime} post={post} />
         </Card.Body>
       </Card>
 
