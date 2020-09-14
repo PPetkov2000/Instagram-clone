@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import Comment from "../Comment";
 import AddComment from "../AddComment";
-import { GlobalStateContext } from "../../context";
 import { projectFirestore } from "../../firebase/config";
+import formatTimestamp from "../../utils/formatTimestamp";
 
-const Comments = ({ postId, showAddComment = true, postUploadTime }) => {
+const Comments = ({ showAddComment = true, post }) => {
   const [comments, setComments] = useState([]);
-  const context = useContext(GlobalStateContext);
+  const postId = post && post.id;
 
   useEffect(() => {
     const unsub = projectFirestore
@@ -31,11 +31,11 @@ const Comments = ({ postId, showAddComment = true, postUploadTime }) => {
           : comments.map((comment) => {
               return <Comment key={comment.id} comment={comment} />;
             })}
-        {showAddComment && <p className="text-muted">{postUploadTime}</p>}
+        {showAddComment && (
+          <p className="text-muted">{formatTimestamp(post.timestamp)}</p>
+        )}
       </div>
-      {showAddComment && (
-        <AddComment postId={postId} username={context && context.username} />
-      )}
+      {showAddComment && <AddComment post={post} />}
     </>
   );
 };
