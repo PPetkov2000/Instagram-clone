@@ -31,7 +31,8 @@ const AddComment = ({ post }) => {
               profileImage: context && context.profileImage,
               timestamp: new Date(),
               type: "comment",
-              post: post,
+              postId: post.Id,
+              postImageUrl: post.imageUrl,
             });
 
             return requester.update("instagramUsers", post.creator, {
