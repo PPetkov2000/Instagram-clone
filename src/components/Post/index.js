@@ -6,7 +6,6 @@ import Comments from "../Comments";
 import PostNavbar from "../PostNavbar";
 import PostModal from "../PostModal";
 import { projectFirestore } from "../../firebase/config";
-import formatTimestamp from "../../utils/formatTimestamp";
 
 export default function Post({ post, uid }) {
   const [showModal, setShowModal] = useState(false);
@@ -14,7 +13,6 @@ export default function Post({ post, uid }) {
   const [postCreator, setPostCreator] = useState();
   const [currentUserProfileImage, setCurrentUserProfileImage] = useState();
   const [postCreatorProfileImage, setPostCreatorProfileImage] = useState();
-  const [postUploadTime, setPostUploadTime] = useState("");
 
   const showOptions = () => setShowModal(true);
   const hideOptions = () => setShowModal(false);
@@ -26,7 +24,6 @@ export default function Post({ post, uid }) {
       .onSnapshot((snapshot) => {
         setLikes(snapshot.data().likes);
         setPostCreator(snapshot.data().creator);
-        setPostUploadTime(formatTimestamp(snapshot.data().timestamp));
       });
 
     return () => unsub();
@@ -80,7 +77,7 @@ export default function Post({ post, uid }) {
         </Card.Header>
         <Card.Img variant="top" src={post.imageUrl} height="600px" />
         <Card.Body>
-          <PostNavbar postId={post.id} postCreator={post.creator} />
+          <PostNavbar post={post} />
           <Card.Text className="mt-2 mb-2">
             {likes.length === 0 ? (
               <strong>No likes</strong>
@@ -90,7 +87,7 @@ export default function Post({ post, uid }) {
               <strong>{likes.length} likes</strong>
             )}
           </Card.Text>
-          <Comments postUploadTime={postUploadTime} post={post} />
+          <Comments post={post} />
         </Card.Body>
       </Card>
 
