@@ -13,7 +13,7 @@ function NotificationsItem({ notification }) {
   };
 
   const openNotificationPost = () => {
-    history.push(`/post-comments-details/${notification.post.id}`);
+    history.push(`/post-comments-details/${notification.postId}`);
   };
 
   return (
@@ -31,14 +31,12 @@ function NotificationsItem({ notification }) {
         {notificationText.slice(notificationText.indexOf(" "))}{" "}
         {formatTimestamp(notification.timestamp)}
       </p>
-      {notification.post && (
-        <img
-          src={notification.post.imageUrl}
-          alt="notification"
-          className="notification-popover-post-img"
-          onClick={openNotificationPost}
-        />
-      )}
+      <img
+        src={notification.postImageUrl}
+        alt="notification"
+        className="notification-popover-post-img"
+        onClick={openNotificationPost}
+      />
     </ListGroup.Item>
   );
 }
