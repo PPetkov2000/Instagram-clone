@@ -11,38 +11,36 @@ import formatTimestamp from "../../utils/formatTimestamp";
 
 const PostCommentsDetails = (props) => {
   const postId = props.match.params.id;
-  const [imageUrl, setImageUrl] = useState("");
-  const [likes, setLikes] = useState([]);
+  const [post, setPost] = useState();
   const [isFollowing, setIsFollowing] = useState(false);
-  const [username, setUsername] = useState("");
-  const [creator, setCreator] = useState(null);
   const [postCreatorProfileImage, setPostCreatorProfileImage] = useState();
-  const [postUploadTime, setPostUploadTime] = useState("");
   const context = useContext(GlobalStateContext);
   const uid = context && context.uid;
+  const postCreator = post && post.creator;
 
   useEffect(() => {
+    if (postId == null) return;
+
     const unsub = projectFirestore
       .collection("posts")
       .doc(postId)
       .onSnapshot((snapshot) => {
-        setLikes(snapshot.data().likes);
-        setImageUrl(snapshot.data().imageUrl);
-        setUsername(snapshot.data().username);
-        setCreator(snapshot.data().creator);
+        setPost({ id: snapshot.id, ...snapshot.data() });
       });
 
     return () => unsub();
   }, [postId]);
 
   useEffect(() => {
+    if (uid == null) return;
+
     const unsub = projectFirestore
       .collection("instagramUsers")
       .doc(uid)
       .onSnapshot((snapshot) => {
         const following = snapshot.data().following;
 
-        if (following.includes(creator)) {
+        if (following.includes(postCreator)) {
           setIsFollowing(true);
         } else {
           setIsFollowing(false);
@@ -50,41 +48,32 @@ const PostCommentsDetails = (props) => {
       });
 
     return () => unsub();
-  }, [uid, creator]);
+  }, [uid, postCreator]);
 
   useEffect(() => {
-    if (creator == null) return;
+    if (postCreator == null) return;
 
     const unsub = projectFirestore
       .collection("instagramUsers")
-      .doc(creator)
+      .doc(postCreator)
       .onSnapshot((snapshot) => {
         setPostCreatorProfileImage(snapshot.data().profileImage);
       });
 
     return () => unsub();
-  }, [creator]);
-
-  useEffect(() => {
-    requester
-      .get("posts", postId)
-      .then((res) => {
-        setPostUploadTime(formatTimestamp(res.data().timestamp));
-      })
-      .catch(console.error);
-  }, [postId]);
+  }, [postCreator]);
 
   const followAndUnfollowUser = () => {
     Promise.all([
       requester.get("instagramUsers", uid),
-      requester.get("instagramUsers", creator),
+      requester.get("instagramUsers", postCreator),
     ]).then(([currentUser, postCreatorUser]) => {
       let currentUserFollowing = currentUser.data().following;
       let postCreatorUserFollowers = postCreatorUser.data().followers;
       let postCreatorUserNotifications = postCreatorUser.data().notifications;
 
-      if (!currentUserFollowing.includes(creator)) {
-        currentUserFollowing.push(creator);
+      if (!currentUserFollowing.includes(postCreator)) {
+        currentUserFollowing.push(postCreator);
         postCreatorUserFollowers.push(uid);
         postCreatorUserNotifications.push({
           id: currentUser.id,
@@ -95,7 +84,7 @@ const PostCommentsDetails = (props) => {
         });
       } else {
         currentUserFollowing = currentUserFollowing.filter(
-          (x) => x !== creator
+          (x) => x !== postCreator
         );
         postCreatorUserFollowers = postCreatorUserFollowers.filter(
           (x) => x !== uid
@@ -109,7 +98,7 @@ const PostCommentsDetails = (props) => {
         requester.update("instagramUsers", uid, {
           following: currentUserFollowing,
         }),
-        requester.update("instagramUsers", creator, {
+        requester.update("instagramUsers", postCreator, {
           followers: postCreatorUserFollowers,
           notifications: postCreatorUserNotifications,
         }),
@@ -119,21 +108,21 @@ const PostCommentsDetails = (props) => {
 
   // There is a bug when the page refreshes
 
-  return (
+  return post ? (
     <div className="details-container">
-      <img src={imageUrl} alt="post" className="post-image" />
+      <img src={post.imageUrl} alt="post" className="post-image" />
       <aside className="comments-section">
         <Card>
           <Card.Header className="post-details-header">
-            <Link to={`/profile/${creator}`}>
+            <Link to={`/profile/${postCreator}`}>
               <Card.Img
                 variant="top"
                 src={postCreatorProfileImage}
                 className="card-header-img"
               />
             </Link>
-            <strong>{username} • </strong>
-            {uid !== creator && (
+            <strong>{post.username} • </strong>
+            {uid !== postCreator && (
               <>
                 {isFollowing ? (
                   <Card.Link href="#unfollow" onClick={followAndUnfollowUser}>
@@ -148,26 +137,25 @@ const PostCommentsDetails = (props) => {
             )}
           </Card.Header>
           <Card.Body>
-            <Comments postId={postId} showAddComment={false} />
+            <Comments showAddComment={false} post={post} />
           </Card.Body>
           <Card.Footer className="post-details-footer">
-            <PostNavbar postId={postId} />
-            {likes.length === 0 ? (
+            <PostNavbar post={post} />
+            {post.likes.length === 0 ? (
               <strong>No likes</strong>
-            ) : likes.length === 1 ? (
-              <strong>{likes.length} like</strong>
+            ) : post.likes.length === 1 ? (
+              <strong>{post.likes.length} like</strong>
             ) : (
-              <strong>{likes.length} likes</strong>
+              <strong>{post.likes.length} likes</strong>
             )}
-            <p className="text-muted">{postUploadTime}</p>
-            <AddComment
-              postId={postId}
-              username={context && context.username}
-            />
+            <p className="text-muted">{formatTimestamp(post.timestamp)}</p>
+            <AddComment post={post} />
           </Card.Footer>
         </Card>
       </aside>
     </div>
+  ) : (
+    <center>Loading...</center>
   );
 };
 
