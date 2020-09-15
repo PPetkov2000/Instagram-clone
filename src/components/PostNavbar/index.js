@@ -14,7 +14,7 @@ import { GlobalStateContext } from "../../utils/context";
 import PostNavbarModal from "../PostNavbarModal";
 import requester from "../../firebase/requester";
 
-const PostNavbar = ({ postId }) => {
+const PostNavbar = ({ post }) => {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -26,7 +26,7 @@ const PostNavbar = ({ postId }) => {
   useEffect(() => {
     const unsub = projectFirestore
       .collection("posts")
-      .doc(postId)
+      .doc(post.id)
       .onSnapshot((snapshot) => {
         if (snapshot.data().likes.includes(email)) {
           setLiked(true);
@@ -36,14 +36,14 @@ const PostNavbar = ({ postId }) => {
       });
 
     return () => unsub();
-  }, [postId, email]);
+  }, [post.id, email]);
 
   useEffect(() => {
     const unsub = projectFirestore
       .collection("instagramUsers")
       .doc(uid)
       .onSnapshot((snapshot) => {
-        if (snapshot.data().saved.includes(postId)) {
+        if (snapshot.data().saved.includes(post.id)) {
           setSaved(true);
         } else {
           setSaved(false);
@@ -51,21 +51,41 @@ const PostNavbar = ({ postId }) => {
       });
 
     return () => unsub();
-  }, [uid, postId]);
+  }, [uid, post.id]);
 
   const likeAndDislikePost = () => {
-    requester
-      .get("posts", postId)
-      .then((res) => {
-        let likes = res.data().likes;
+    Promise.all([
+      requester.get("posts", post.id),
+      requester.get("instagramUsers", post.creator),
+    ])
+      .then(([currentPost, currentUser]) => {
+        let currentPostLikes = currentPost.data().likes;
+        let currentUserNotifications = currentUser.data().notifications;
 
-        if (!likes.includes(email)) {
-          likes.push(email);
+        if (!currentPostLikes.includes(email)) {
+          currentPostLikes.push(email);
+          currentUserNotifications.push({
+            id: uid,
+            username: context.username,
+            profileImage: context.profileImage,
+            timestamp: new Date(),
+            type: "like",
+            postId: post.id,
+            postImageUrl: post.imageUrl,
+          });
         } else {
-          likes = likes.filter((x) => x !== email);
+          currentPostLikes = currentPostLikes.filter((x) => x !== email);
+          currentUserNotifications = currentUserNotifications.filter(
+            (x) => x.id !== uid
+          );
         }
 
-        return requester.update("posts", postId, { likes });
+        return Promise.all([
+          requester.update("posts", post.id, { likes: currentPostLikes }),
+          requester.update("instagramUsers", post.creator, {
+            notifications: currentUserNotifications,
+          }),
+        ]);
       })
       .catch(console.error);
   };
@@ -76,10 +96,10 @@ const PostNavbar = ({ postId }) => {
       .then((res) => {
         let saved = res.data().saved;
 
-        if (!saved.includes(postId)) {
-          saved.push(postId);
+        if (!saved.includes(post.id)) {
+          saved.push(post.id);
         } else {
-          saved = saved.filter((x) => x !== postId);
+          saved = saved.filter((x) => x !== post.id);
         }
 
         return requester.update("instagramUsers", uid, { saved });
@@ -91,7 +111,7 @@ const PostNavbar = ({ postId }) => {
   const hideOptions = () => setShowModal(false);
 
   const openPostDetails = () => {
-    history.push(`/post-comments-details/${postId}`);
+    history.push(`/post-comments-details/${post.id}`);
   };
 
   return (
