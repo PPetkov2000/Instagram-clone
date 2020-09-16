@@ -15,9 +15,7 @@ const ProfileSaved = ({ savedPosts }) => {
   return (
     <div className="profile-saved-img-container">
       {savedPosts.length === 0 ? (
-        <center>
-          <h3>No posts</h3>
-        </center>
+        <h3>No posts</h3>
       ) : (
         <>
           {savedPosts.map((post) => {
