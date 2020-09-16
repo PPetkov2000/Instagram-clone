@@ -10,7 +10,13 @@ import requester from "../../firebase/requester";
 import formatTimestamp from "../../utils/formatTimestamp";
 
 const PostCommentsDetails = (props) => {
-  const postId = props.match.params.id;
+  let postId;
+  if (!props.match) {
+    postId = props.postId;
+  } else {
+    postId = props.match.params.id;
+  }
+  // const postId = props.match.params.id;
   const [post, setPost] = useState();
   const [isFollowing, setIsFollowing] = useState(false);
   const [postCreatorProfileImage, setPostCreatorProfileImage] = useState();
