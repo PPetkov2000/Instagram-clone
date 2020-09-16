@@ -1,6 +1,6 @@
 import React from "react";
 import { Modal, ListGroup } from "react-bootstrap";
-import { projectFirestore } from "../../firebase/config";
+import requester from "../../firebase/requester";
 
 function ProfileHeaderUserStatusModal({
   showModal,
@@ -11,34 +11,40 @@ function ProfileHeaderUserStatusModal({
   username,
 }) {
   const unfollowUser = () => {
-    projectFirestore
-      .collection("instagramUsers")
-      .doc(uid)
-      .get()
-      .then((res) => {
-        let following = res.data().following;
-        following = following.filter((x) => x !== userId);
+    Promise.all([
+      requester.get("instagramUsers", uid),
+      requester.get("instagramUsers", userId),
+    ])
+      .then(([currentUser, unfollowedUser]) => {
+        let currentUserFollowing = currentUser.data().following;
+        let unfollowedUserFollowers = unfollowedUser.data().followers;
+        let unfollowedUserNotifications = unfollowedUser.data().notifications;
 
-        projectFirestore
-          .collection("instagramUsers")
-          .doc(userId)
-          .get()
-          .then((res) => {
-            let followers = res.data().followers;
-            followers = followers.filter((x) => x !== uid);
+        currentUserFollowing = currentUserFollowing.filter((x) => x !== userId);
+        unfollowedUserFollowers = currentUserFollowing.filter((x) => x !== uid);
+        unfollowedUserNotifications = unfollowedUserNotifications.filter(
+          (x) => x.id !== uid
+        );
 
-            projectFirestore
-              .collection("instagramUsers")
-              .doc(userId)
-              .update({ followers });
+        return Promise.all([
+          requester.update("instagramUsers", uid, {
+            following: currentUserFollowing,
+          }),
+          requester.update("instagramUsers", userId, {
+            followers: unfollowedUserFollowers,
+            notifications: unfollowedUserNotifications,
+          }),
+        ])
+          .then(() => {
+            console.log(
+              `${currentUser.data().username} unfollowed ${
+                unfollowedUser.data().username
+              }`
+            );
           })
           .catch(console.error);
-
-        return projectFirestore
-          .collection("instagramUsers")
-          .doc(uid)
-          .update({ following });
-      });
+      })
+      .catch(console.error);
 
     hideModal();
   };
