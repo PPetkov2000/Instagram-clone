@@ -206,17 +206,24 @@
   border-radius: 50%;
 }
 
-.popover-item {
+.notifications-popover-item {
   padding-left: 0;
   padding-bottom: 0;
+  display: flex;
 }
 
-.popover-img {
+.notifications-popover-img {
   width: 3rem;
+  height: 3rem;
   margin-right: 0.7rem;
   border: 1px solid gray;
   border-radius: 50%;
-  float: left;
+  /* float: left; */
+}
+
+.notification-popover-post-img {
+  width: 2.5rem;
+  height: 2.5rem;
 }
 
 .aside {
@@ -400,6 +407,34 @@
   align-items: center;
 }
 
+.user-profile-activities-tagged-container {
+  width: 100%;
+  height: 40vh;
+}
+
+.user-profile-activities-tagged-content {
+  width: 20%;
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-profile-activities-tagged-icon {
+  width: 4rem;
+  height: 4rem;
+  padding: 0.5rem;
+  border: 2px solid black;
+  border-radius: 50%;
+}
+
+.user-profile-activities-tagged-text {
+  margin: 1rem 0;
+  font-size: 1.6rem;
+}
+
 .user-profile-buttons {
   display: flex;
   justify-content: center;
@@ -489,6 +524,12 @@
   margin-right: 0.7rem;
   border: 1px solid lightgray;
   border-radius: 50%;
+  cursor: pointer;
+}
+
+.profile-header-followers-text > strong,
+.profile-header-following-text > strong {
+  cursor: pointer;
 }
 
 .profile-header-followers-text > p,
@@ -516,6 +557,7 @@
 .profile-saved-img-div {
   height: 200px;
   width: 32%;
+  position: relative;
 }
 
 .profile-posts-img-div:nth-child(2),
@@ -527,6 +569,28 @@
 .profile-saved-img {
   width: 100%;
   height: 100%;
+}
+
+.profile-saved-hover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: transparent;
+  width: 100%;
+  height: 100%;
+}
+
+.profile-saved-hover:hover {
+  background-color: black;
+  color: white;
+  opacity: 0.5;
+}
+
+.profile-saved-hover > span {
+  margin: 1rem;
 }
 
 .profile-header-modal-upload-item {
@@ -561,4 +625,18 @@
   margin: 1rem auto 2rem auto;
   border: 1px solid lightgray;
   border-radius: 50%;
+}
+
+.profile-saved-modal .modal-dialog {
+  max-width: none !important;
+  width: 60% !important;
+  margin-top: 4rem;
+}
+
+.profile-saved-modal-body {
+  padding: 0;
+}
+
+.profile-saved-modal .details-container {
+  width: 100%;
 }
