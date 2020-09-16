@@ -24,6 +24,7 @@ import { GlobalStateContext } from "../../utils/context";
 
 const NavBar = () => {
   const [notifications, setNotifications] = useState([]);
+  const [currentUserProfileImage, setCurrentUserProfileImage] = useState();
   const history = useHistory();
   const context = useContext(GlobalStateContext);
   const uid = context && context.uid;
@@ -36,6 +37,7 @@ const NavBar = () => {
       .doc(uid)
       .onSnapshot((snapshot) => {
         setNotifications(snapshot.data().notifications);
+        setCurrentUserProfileImage(snapshot.data().profileImage);
       });
 
     return () => unsub();
@@ -146,7 +148,7 @@ const NavBar = () => {
             }
           >
             <img
-              src="/images/user_icon.png"
+              src={currentUserProfileImage}
               alt="profile"
               className="navbar-profile-img"
             />
