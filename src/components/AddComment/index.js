@@ -7,6 +7,7 @@ import requester from "../../firebase/requester";
 const AddComment = ({ post }) => {
   const [comment, setComment] = useState("");
   const context = useContext(GlobalStateContext);
+  const uid = context && context.uid;
 
   const publishComment = () => {
     projectFirestore
@@ -20,18 +21,20 @@ const AddComment = ({ post }) => {
         timestamp: timestamp(),
       })
       .then(() => {
+        if (uid === post.creator) return;
+
         requester
           .get("instagramUsers", post.creator)
           .then((res) => {
             const notifications = res.data().notifications;
 
             notifications.push({
-              id: context && context.uid,
+              id: uid,
               username: context && context.username,
               profileImage: context && context.profileImage,
               timestamp: new Date(),
               type: "comment",
-              postId: post.Id,
+              postId: post.id,
               postImageUrl: post.imageUrl,
             });
 
