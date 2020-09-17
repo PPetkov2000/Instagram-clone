@@ -15,6 +15,7 @@ const ProfileActivities = ({
   const [posts, setPosts] = useState([]);
   const [saved, setSaved] = useState([]);
   const [savedPosts, setSavedPosts] = useState([]);
+  const [comments, setComments] = useState(0);
 
   useEffect(() => {
     const unsub = projectFirestore
