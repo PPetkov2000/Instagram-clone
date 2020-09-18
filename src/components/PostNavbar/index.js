@@ -20,7 +20,6 @@ const PostNavbar = ({ post }) => {
   const [showModal, setShowModal] = useState(false);
   const history = useHistory();
   const context = useContext(GlobalStateContext);
-  const email = context && context.email;
   const uid = context && context.uid;
 
   useEffect(() => {
@@ -28,26 +27,18 @@ const PostNavbar = ({ post }) => {
       .collection("posts")
       .doc(post.id)
       .onSnapshot((snapshot) => {
-        if (snapshot.data().likes.includes(email)) {
-          setLiked(true);
-        } else {
-          setLiked(false);
-        }
+        setLiked(snapshot.data().likes.includes(uid));
       });
 
     return () => unsub();
-  }, [post.id, email]);
+  }, [post.id, uid]);
 
   useEffect(() => {
     const unsub = projectFirestore
       .collection("instagramUsers")
       .doc(uid)
       .onSnapshot((snapshot) => {
-        if (snapshot.data().saved.includes(post.id)) {
-          setSaved(true);
-        } else {
-          setSaved(false);
-        }
+        setSaved(snapshot.data().saved.includes(post.id));
       });
 
     return () => unsub();
@@ -62,8 +53,8 @@ const PostNavbar = ({ post }) => {
         let currentPostLikes = currentPost.data().likes;
         let currentUserNotifications = currentUser.data().notifications;
 
-        if (!currentPostLikes.includes(email)) {
-          currentPostLikes.push(email);
+        if (!currentPostLikes.includes(uid)) {
+          currentPostLikes.push(uid);
           currentUserNotifications.push({
             id: uid,
             username: context.username,
@@ -74,7 +65,7 @@ const PostNavbar = ({ post }) => {
             postImageUrl: post.imageUrl,
           });
         } else {
-          currentPostLikes = currentPostLikes.filter((x) => x !== email);
+          currentPostLikes = currentPostLikes.filter((x) => x !== uid);
           currentUserNotifications = currentUserNotifications.filter(
             (x) => x.id !== uid
           );
