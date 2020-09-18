@@ -127,7 +127,7 @@ const PostNavbar = ({ post }) => {
             <BsCursor />
           </Nav.Link>
         </Nav>
-        <Nav>
+        <Nav className="posts-navbar-nav">
           <Nav.Link
             href="#bookmark"
             className="nav-icon"
