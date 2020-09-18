@@ -16,7 +16,8 @@ const AddComment = ({ post }) => {
       .collection("comments")
       .add({
         text: comment,
-        creator: context && context.username,
+        creatorId: uid,
+        creatorUsername: context && context.username,
         postId: post.id,
         timestamp: timestamp(),
       })
