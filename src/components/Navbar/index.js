@@ -95,6 +95,7 @@ const NavBar = () => {
         <Nav.Link href="#notifications" className="nav-icon">
           <OverlayTrigger
             trigger="click"
+            rootClose
             key="bottom"
             placement="bottom"
             overlay={
@@ -123,6 +124,7 @@ const NavBar = () => {
         <Nav.Link href="#profile" className="nav-icon">
           <OverlayTrigger
             trigger="click"
+            rootClose
             key="bottom"
             placement="bottom"
             overlay={
