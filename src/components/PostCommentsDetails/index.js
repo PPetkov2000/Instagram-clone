@@ -44,13 +44,7 @@ const PostCommentsDetails = (props) => {
       .collection("instagramUsers")
       .doc(uid)
       .onSnapshot((snapshot) => {
-        const following = snapshot.data().following;
-
-        if (following.includes(postCreator)) {
-          setIsFollowing(true);
-        } else {
-          setIsFollowing(false);
-        }
+        setIsFollowing(snapshot.data().following.includes(postCreator));
       });
 
     return () => unsub();
