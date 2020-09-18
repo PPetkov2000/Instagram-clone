@@ -640,3 +640,31 @@
 .profile-saved-modal .details-container {
   width: 100%;
 }
+
+@media only screen and (max-width: 768px) {
+  .main-container {
+    width: 100%;
+  }
+  .main-container-content {
+    flex: 1;
+  }
+  .aside {
+    display: none;
+  }
+  .user-profile-container {
+    width: 100%;
+  }
+  .details-container {
+    width: 100%;
+  }
+  .details-container img {
+    display: none;
+  }
+  .comments-section .card-body {
+    height: 50vh;
+  }
+  .profile-saved-modal .modal-dialog {
+    width: 100% !important;
+    margin: 5rem 0 0 0;
+  }
+}
