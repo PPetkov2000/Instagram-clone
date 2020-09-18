@@ -2,59 +2,66 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { Modal, ListGroup } from "react-bootstrap";
 import { projectFirestore } from "../../firebase/config";
+import requester from "../../firebase/requester";
 
-const PostModal = ({ showModal, hideOptions, postId, userId }) => {
+const PostModal = ({ showModal, hideOptions, postId, userId, postCreator }) => {
   const [isFollowing, setIsFollowing] = useState(false);
-  const [creator, setCreator] = useState("");
   const history = useHistory();
-
-  useEffect(() => {
-    const unsub = projectFirestore
-      .collection("posts")
-      .doc(postId)
-      .onSnapshot((res) => {
-        setCreator(res.data().creator);
-      });
-
-    return () => unsub();
-  }, [postId]);
 
   useEffect(() => {
     const unsub = projectFirestore
       .collection("instagramUsers")
       .doc(userId)
       .onSnapshot((snapshot) => {
-        const following = snapshot.data().following;
-
-        if (following.includes(creator)) {
-          setIsFollowing(true);
-        } else {
-          setIsFollowing(false);
-        }
+        setIsFollowing(snapshot.data().following.includes(postCreator));
       });
 
     return () => unsub();
-  }, [userId, creator]);
+  }, [userId, postCreator]);
 
   const followAndUnfollowUser = () => {
-    projectFirestore
-      .collection("instagramUsers")
-      .doc(userId)
-      .get()
-      .then((res) => {
-        let following = res.data().following;
+    Promise.all([
+      requester.get("instagramUsers", userId),
+      requester.get("instagramUsers", postCreator),
+    ])
+      .then(([currentUser, postCreatorUser]) => {
+        let currentUserFollowing = currentUser.data().following;
+        let postCreatorUserFollowers = postCreatorUser.data().followers;
+        let postCreatorUserNotifications = postCreatorUser.data().notifications;
 
-        if (!following.includes(creator)) {
-          following.push(creator);
+        if (!currentUserFollowing.includes(postCreator)) {
+          currentUserFollowing.push(postCreator);
+          postCreatorUserFollowers.push(userId);
+          postCreatorUserNotifications.push({
+            id: currentUser.id,
+            username: currentUser.data().username,
+            profileImage: currentUser.data().profileImage,
+            timestamp: new Date(),
+            type: "follower",
+          });
         } else {
-          following = following.filter((x) => x !== creator);
+          currentUserFollowing = currentUserFollowing.filter(
+            (x) => x !== postCreator
+          );
+          postCreatorUserFollowers = postCreatorUserFollowers.filter(
+            (x) => x !== userId
+          );
+          postCreatorUserNotifications = postCreatorUserNotifications.filter(
+            (x) => x.id !== userId
+          );
         }
 
-        return projectFirestore
-          .collection("instagramUsers")
-          .doc(userId)
-          .update({ following });
-      });
+        return Promise.all([
+          requester.update("instagramUsers", userId, {
+            following: currentUserFollowing,
+          }),
+          requester.update("instagramUsers", postCreator, {
+            followers: postCreatorUserFollowers,
+            notifications: postCreatorUserNotifications,
+          }),
+        ]);
+      })
+      .catch(console.error);
 
     hideOptions();
   };
@@ -70,22 +77,26 @@ const PostModal = ({ showModal, hideOptions, postId, userId }) => {
           <ListGroup.Item action className="text-danger">
             Report
           </ListGroup.Item>
-          {isFollowing ? (
-            <ListGroup.Item
-              action
-              className="text-danger"
-              onClick={followAndUnfollowUser}
-            >
-              Cancel subscription
-            </ListGroup.Item>
-          ) : (
-            <ListGroup.Item
-              action
-              className="text-success"
-              onClick={followAndUnfollowUser}
-            >
-              Subscribe
-            </ListGroup.Item>
+          {userId !== postCreator && (
+            <>
+              {isFollowing ? (
+                <ListGroup.Item
+                  action
+                  className="text-danger"
+                  onClick={followAndUnfollowUser}
+                >
+                  Cancel subscription
+                </ListGroup.Item>
+              ) : (
+                <ListGroup.Item
+                  action
+                  className="text-success"
+                  onClick={followAndUnfollowUser}
+                >
+                  Subscribe
+                </ListGroup.Item>
+              )}
+            </>
           )}
           <ListGroup.Item action onClick={openPost}>
             Go to post
