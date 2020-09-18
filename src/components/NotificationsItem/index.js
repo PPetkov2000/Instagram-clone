@@ -31,12 +31,14 @@ function NotificationsItem({ notification }) {
         {notificationText.slice(notificationText.indexOf(" "))}{" "}
         {formatTimestamp(notification.timestamp)}
       </p>
-      <img
-        src={notification.postImageUrl}
-        alt="notification"
-        className="notification-popover-post-img"
-        onClick={openNotificationPost}
-      />
+      {notification.postImageUrl && (
+        <img
+          src={notification.postImageUrl}
+          alt="notification"
+          className="notification-popover-post-img"
+          onClick={openNotificationPost}
+        />
+      )}
     </ListGroup.Item>
   );
 }
