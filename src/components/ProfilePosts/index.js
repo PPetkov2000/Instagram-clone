@@ -6,7 +6,6 @@ import PostCommentsDetails from "../PostCommentsDetails";
 const ProfilePosts = ({ posts }) => {
   const [showModal, setShowModal] = useState(false);
   const [postId, setPostId] = useState();
-  console.log(posts);
 
   const openPost = (e) => {
     setPostId(e.target.dataset.id);
