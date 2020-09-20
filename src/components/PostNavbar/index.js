@@ -116,21 +116,16 @@ const PostNavbar = ({ post }) => {
           >
             {liked ? <FcLike /> : <BsHeart />}
           </Nav.Link>
-        </Nav>
-        <Nav>
+
           <Nav.Link className="nav-icon" onClick={openPostDetails}>
             <BsChat />
           </Nav.Link>
-        </Nav>
-        <Nav>
           <Nav.Link href="#options" className="nav-icon" onClick={showOptions}>
             <BsCursor />
           </Nav.Link>
-        </Nav>
-        <Nav className="posts-navbar-nav">
           <Nav.Link
             href="#bookmark"
-            className="nav-icon"
+            className="nav-icon posts-navbar-nav"
             onClick={saveAndUnSavePost}
           >
             {saved ? <BsFillBookmarkFill /> : <BsBookmark />}
