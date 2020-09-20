@@ -20,7 +20,7 @@ const ProfileSaved = ({ savedPosts }) => {
         <>
           {savedPosts.map((post) => {
             return (
-              <div key={post.id} className="profile-saved-img-div">
+              <div key={post.postId} className="profile-saved-img-div">
                 <img
                   src={post.imageUrl}
                   alt="saved post"
@@ -28,14 +28,14 @@ const ProfileSaved = ({ savedPosts }) => {
                 />
                 <div
                   className="profile-saved-hover"
-                  data-id={post.id}
+                  data-id={post.postId}
                   onClick={openPost}
                 >
                   <span>
                     <BsFillHeartFill /> {post.likes.length}
                   </span>
                   <span>
-                    <BsFillChatFill /> 1000
+                    <BsFillChatFill /> {post.comments.length}
                   </span>
                 </div>
               </div>
@@ -45,6 +45,7 @@ const ProfileSaved = ({ savedPosts }) => {
           <Modal
             show={showModal}
             onHide={() => setShowModal(false)}
+            centered
             className="profile-saved-modal"
           >
             <Modal.Body className="profile-saved-modal-body">
