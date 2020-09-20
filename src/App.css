@@ -78,6 +78,11 @@
   justify-content: flex-start;
 }
 
+.posts-navbar-nav {
+  position: absolute;
+  right: 0;
+}
+
 .comments-container p {
   margin: 0;
 }
@@ -124,6 +129,10 @@
 .comments-section {
   width: 30%;
   flex: 2;
+}
+
+.comments-section .card-body {
+  min-height: 50vh;
 }
 
 .post-details-header {
@@ -571,6 +580,7 @@
   height: 100%;
 }
 
+.profile-posts-hover,
 .profile-saved-hover {
   display: flex;
   align-items: center;
@@ -583,12 +593,14 @@
   height: 100%;
 }
 
+.profile-posts-hover:hover,
 .profile-saved-hover:hover {
   background-color: black;
   color: white;
   opacity: 0.5;
 }
 
+.profile-posts-hover > span,
 .profile-saved-hover > span {
   margin: 1rem;
 }
@@ -627,16 +639,18 @@
   border-radius: 50%;
 }
 
+.profile-posts-modal .modal-dialog,
 .profile-saved-modal .modal-dialog {
   max-width: none !important;
   width: 60% !important;
-  margin-top: 4rem;
 }
 
+.profile-posts-modal-body,
 .profile-saved-modal-body {
   padding: 0;
 }
 
+.profile-posts-modal .details-container,
 .profile-saved-modal .details-container {
   width: 100%;
 }
@@ -660,11 +674,8 @@
   .details-container img {
     display: none;
   }
-  .comments-section .card-body {
-    height: 50vh;
-  }
+  .profile-posts-modal .modal-dialog,
   .profile-saved-modal .modal-dialog {
     width: 100% !important;
-    margin: 5rem 0 0 0;
   }
 }
