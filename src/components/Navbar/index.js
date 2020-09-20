@@ -54,7 +54,7 @@ const NavBar = () => {
       .catch(console.error);
   };
 
-  return (
+  return !uid ? null : (
     <Navbar bg="light" variant="light" className="navbar">
       <Navbar.Brand>
         <Link to="/">
