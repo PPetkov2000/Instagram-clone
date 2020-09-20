@@ -83,7 +83,7 @@ function ProfileHeaderFollowersModal({ showModal, hideModal, userFollowers }) {
   };
 
   return (
-    <Modal show={showModal} onHide={hideModal}>
+    <Modal show={showModal} onHide={hideModal} centered>
       <Modal.Header closeButton>
         <Modal.Title className="profile-header-followers-title">
           Followers
@@ -93,7 +93,7 @@ function ProfileHeaderFollowersModal({ showModal, hideModal, userFollowers }) {
         {postCreatorFollowers.map((follower) => {
           return (
             <div
-              key={follower.email}
+              key={follower.id + Math.random()}
               className="profile-header-followers-container"
             >
               <img
