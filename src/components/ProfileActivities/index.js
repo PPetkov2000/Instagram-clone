@@ -21,12 +21,23 @@ const ProfileActivities = ({
       .collection("posts")
       .where("creator", "==", userId)
       .onSnapshot((snapshot) => {
-        setPosts(
-          snapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }))
-        );
+        snapshot.docs.forEach((doc) => {
+          projectFirestore
+            .collection(`posts/${doc.id}/comments`)
+            .onSnapshot((snap) => {
+              const comments = snap.docs.map((doc) => doc.data());
+
+              setPosts(
+                snapshot.docs.map((doc) => ({
+                  id: doc.id,
+                  ...doc.data(),
+                  comments: comments.filter(
+                    (comment) => comment.postId === doc.id
+                  ),
+                }))
+              );
+            });
+        });
       });
 
     return () => unsub();
@@ -48,12 +59,24 @@ const ProfileActivities = ({
   useEffect(() => {
     setSavedPosts(
       saved.reduce((result, postId) => {
-        projectFirestore
-          .collection("posts")
-          .doc(postId)
-          .onSnapshot((snapshot) => {
-            result.push({ id: snapshot.id, ...snapshot.data() });
-          });
+        Promise.all([
+          projectFirestore.collection("posts").doc(postId).get(),
+          projectFirestore
+            .collection("posts")
+            .doc(postId)
+            .collection("comments")
+            .get(),
+        ]).then(([postInfo, commentsInfo]) => {
+          const post = { postId: postInfo.id, ...postInfo.data() };
+          const comments = commentsInfo.docs.map((doc) => ({
+            commentId: doc.id,
+            ...doc.data(),
+          }));
+
+          const data = { ...post, comments };
+
+          result.push(data);
+        });
 
         return result;
       }, [])
