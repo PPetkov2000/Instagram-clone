@@ -138,7 +138,7 @@ const NavBar = () => {
                     <BsBookmark className="navbar-profile-popover-icon" />
                     Saved
                   </Link>
-                  <Link to="/settings">
+                  <Link to={`/edit/${context && context.uid}`}>
                     <BsGearWide className="navbar-profile-popover-icon" />
                     Settings
                   </Link>
