@@ -568,7 +568,7 @@
 
 .profile-posts-img-div,
 .profile-saved-img-div {
-  height: 200px;
+  height: 250px;
   width: 32%;
   position: relative;
 }
@@ -657,6 +657,82 @@
 .profile-posts-modal .details-container,
 .profile-saved-modal .details-container {
   width: 100%;
+}
+
+.edit-profile-row {
+  width: 65%;
+  margin: 0 auto;
+}
+
+.edit-profile-tab-pane-header,
+.change-password-tab-pane-header {
+  display: flex;
+  align-items: center;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  height: 3rem;
+}
+
+.edit-profile-img-container,
+.change-password-img-container {
+  flex: 0.3;
+  display: flex;
+  justify-content: center;
+  height: 100%;
+}
+
+.edit-profile-img,
+.change-password-img {
+  width: 3rem;
+  height: 100%;
+  border: 1px solid lightgray;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.edit-profile-tab-pane-text,
+.change-password-tab-pane-text {
+  flex: 0.7;
+  font-size: 0.9rem;
+}
+
+.edit-profile-tab-pane-title {
+  margin: 0;
+}
+
+.edit-profile-form-group {
+  display: flex;
+  align-items: center;
+}
+
+.edit-profile-form-group-label {
+  flex: 0.3;
+  height: 100%;
+  text-align: center;
+  margin: 0;
+}
+
+.edit-profile-form-group-field {
+  flex: 0.7;
+}
+
+.edit-profile-form-group-field:focus {
+  border: 2px solid black;
+}
+
+.edit-profile-buttons-container,
+.change-password-buttons-container {
+  display: flex;
+  margin-bottom: 2rem;
+}
+
+.edit-profile-buttons,
+.change-password-buttons {
+  flex: 0.7;
+  margin-left: -0.7rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 @media only screen and (max-width: 768px) {
