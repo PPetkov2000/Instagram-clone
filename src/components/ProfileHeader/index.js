@@ -83,13 +83,7 @@ const ProfileHeader = ({ userId }) => {
       .collection("instagramUsers")
       .doc(uid)
       .onSnapshot((snapshot) => {
-        const following = snapshot.data().following;
-
-        if (following.includes(userId)) {
-          setIsFollowingUser(true);
-        } else {
-          setIsFollowingUser(false);
-        }
+        setIsFollowingUser(snapshot.data().following.includes(userId));
       });
 
     return () => unsub();
@@ -143,7 +137,12 @@ const ProfileHeader = ({ userId }) => {
           <h3>{currentUser && currentUser.username}</h3>
           {userId === uid ? (
             <>
-              <button className="user-profile-edit-button">Edit Profile</button>
+              <button
+                className="user-profile-edit-button"
+                onClick={() => history.push(`/edit/${uid}`)}
+              >
+                Edit Profile
+              </button>
               <BsGearWide
                 className="user-profile-settings"
                 onClick={showProfileSettingsOptions}
@@ -206,8 +205,8 @@ const ProfileHeader = ({ userId }) => {
         userId={userId}
       />
       <ProfileHeaderSettingsModal
-        showProfileSettings={showProfileSettings}
-        hideProfileSettingsOptions={hideProfileSettingsOptions}
+        showModal={showProfileSettings}
+        hideModal={hideProfileSettingsOptions}
       />
       <ProfileHeaderUserStatusModal
         showModal={showProfileUserStatus}
