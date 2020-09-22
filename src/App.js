@@ -8,6 +8,7 @@ import Messages from "./components/Messages";
 import Profile from "./components/Profile";
 import Register from "./components/Register";
 import Login from "./components/Login";
+import ProfileSettings from "./components/ProfileSettings";
 import Context from "./utils/context";
 
 const App = () => {
@@ -25,6 +26,7 @@ const App = () => {
           <Route path="/profile/:id" component={Profile} />
           <Route path="/register" component={Register} />
           <Route path="/login" component={Login} />
+          <Route path="/edit/:id" component={ProfileSettings} />
         </Switch>
       </Router>
     </Context>
