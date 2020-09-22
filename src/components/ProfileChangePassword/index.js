@@ -12,18 +12,17 @@ function ProfileChangePassword() {
 
   const handleChangePassword = (e) => {
     e.preventDefault();
-    console.log(`Old Password: ${oldPassword}`);
-    console.log(`New Password: ${newPassword}`);
-    console.log(`Confirm Password: ${confirmPassword}`);
 
     const user = projectAuth.currentUser;
 
-    user
-      .updatePassword(newPassword)
-      .then(() => {
-        // Update successful.
-      })
-      .catch(console.error);
+    if (newPassword === confirmPassword) {
+      user
+        .updatePassword(newPassword)
+        .then(() => {
+          console.log("Password changed!");
+        })
+        .catch(console.error);
+    }
   };
 
   return (
