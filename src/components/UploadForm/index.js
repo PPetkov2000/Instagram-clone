@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Form, FormControl } from "react-bootstrap";
+import { BsPlusCircle } from "react-icons/bs";
 import ProgressBar from "../ProgressBar";
 
 const UploadForm = () => {
@@ -23,7 +24,18 @@ const UploadForm = () => {
   return (
     <div className="uploadForm-container">
       <Form>
-        <FormControl type="file" onChange={handleChange} />
+        <Form.Label
+          htmlFor="upload-post"
+          style={{ fontSize: "2rem", cursor: "pointer" }}
+        >
+          <BsPlusCircle />
+        </Form.Label>
+        <FormControl
+          type="file"
+          onChange={handleChange}
+          id="upload-post"
+          style={{ display: "none" }}
+        />
         <div className="uploadForm-output">
           {error && <div className="error">{error}</div>}
           {file && <div className="file">{file.name}</div>}
@@ -32,6 +44,6 @@ const UploadForm = () => {
       </Form>
     </div>
   );
-}
+};
 
 export default UploadForm;
