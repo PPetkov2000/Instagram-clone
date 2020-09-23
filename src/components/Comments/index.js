@@ -29,7 +29,7 @@ const Comments = ({ showAddComment = true, post }) => {
         {comments.length === 0
           ? "No comments yet!"
           : comments.map((comment) => {
-              return <Comment key={comment.id} comment={comment} />;
+              return <Comment key={comment.id} comment={comment} post={post} />;
             })}
         {showAddComment && (
           <p className="text-muted">{formatTimestamp(post.timestamp)}</p>
