@@ -87,6 +87,29 @@
   margin: 0;
 }
 
+.comment-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.comment-icon {
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.comment-details {
+  display: flex;
+  margin: 0.5rem 0 1rem 0;
+}
+
+.comment-details > p {
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-right: 1rem;
+  cursor: pointer;
+}
+
 .navbar-header-dots {
   margin-top: 15px;
   margin-right: 10px;
@@ -521,7 +544,8 @@
 }
 
 .profile-header-followers-container,
-.profile-header-following-container {
+.profile-header-following-container,
+.comment-likes-modal-body-container {
   display: flex;
   align-items: center;
   font-size: 0.9rem;
@@ -530,7 +554,8 @@
 }
 
 .profile-header-followers-img,
-.profile-header-following-img {
+.profile-header-following-img,
+.comment-likes-img {
   width: 2.2rem;
   height: 2.2rem;
   margin-right: 0.7rem;
@@ -540,12 +565,14 @@
 }
 
 .profile-header-followers-text > strong,
-.profile-header-following-text > strong {
+.profile-header-following-text > strong,
+.comment-likes-modal-body-text > strong {
   cursor: pointer;
 }
 
 .profile-header-followers-text > p,
-.profile-header-following-text > p {
+.profile-header-following-text > p,
+.comment-likes-modal-body-text > p {
   margin: 0;
 }
 
@@ -557,6 +584,17 @@
   padding: 0 0.5rem;
   border: 1px solid lightgray;
   border-radius: 0.2rem;
+}
+
+.comment-likes-button {
+  background-color: #007bff;
+  color: #fff;
+  font-weight: bold;
+  border-color: #007bff;
+  border-radius: 0.3rem;
+  padding: 0.2rem 0.5rem;
+  position: absolute;
+  right: 1rem;
 }
 
 .profile-posts-img-container,
