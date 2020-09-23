@@ -1,12 +1,12 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { InputGroup, FormControl, Button } from "react-bootstrap";
 import { projectFirestore, timestamp } from "../../firebase/config";
-import { GlobalStateContext } from "../../utils/context";
+import { useGlobalContext } from "../../utils/context";
 import requester from "../../firebase/requester";
 
 const AddComment = ({ post }) => {
   const [comment, setComment] = useState("");
-  const context = useContext(GlobalStateContext);
+  const context = useGlobalContext();
   const uid = context && context.uid;
 
   const publishComment = () => {
@@ -20,6 +20,7 @@ const AddComment = ({ post }) => {
         creatorUsername: context && context.username,
         postId: post.id,
         timestamp: timestamp(),
+        likes: [],
       })
       .then(() => {
         if (uid === post.creator) return;
