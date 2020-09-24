@@ -1,15 +1,19 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import { projectFirestore } from "../../firebase/config";
-import { GlobalStateContext } from "../../utils/context";
+import { useGlobalContext } from "../../utils/context";
 import requester from "../../firebase/requester";
+import ProfileHeaderUserStatusModal from "../ProfileHeaderUserStatusModal";
 
 function ProfileHeaderFollowingModal({ showModal, hideModal, userFollowing }) {
   const [postCreatorFollowing, setPostCreatorFollowing] = useState([]);
   const [currentUserFollowing, setCurrentUserFollowing] = useState([]);
+  const [showUserStatusModal, setShowUserStatusModal] = useState(false);
+  const [clickedUserId, setClickedUserId] = useState();
+  const [clickedUser, setClickedUser] = useState();
   const history = useHistory();
-  const context = useContext(GlobalStateContext);
+  const context = useGlobalContext();
   const uid = context && context.uid;
 
   useEffect(() => {
@@ -39,6 +43,17 @@ function ProfileHeaderFollowingModal({ showModal, hideModal, userFollowing }) {
 
     return () => unsub();
   }, [uid]);
+
+  useEffect(() => {
+    if (clickedUserId == null) return;
+
+    requester
+      .get("instagramUsers", clickedUserId)
+      .then((res) => {
+        setClickedUser({ id: res.id, ...res.data() });
+      })
+      .catch(console.error);
+  }, [clickedUserId]);
 
   const followUser = (e) => {
     if (uid == null) return;
@@ -83,54 +98,72 @@ function ProfileHeaderFollowingModal({ showModal, hideModal, userFollowing }) {
   };
 
   return (
-    <Modal show={showModal} onHide={hideModal}>
-      <Modal.Header closeButton>
-        <Modal.Title className="profile-header-following-title">
-          Following
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        {postCreatorFollowing.map((follow) => {
-          return (
-            <div
-              key={follow.email}
-              className="profile-header-following-container"
-            >
-              <img
-                src={follow.profileImage}
-                alt="following"
-                className="profile-header-following-img"
-                data-id={follow.id}
-                onClick={goToUserProfile}
-              />
-              <div className="profile-header-following-text">
-                <strong onClick={goToUserProfile} data-id={follow.id}>
-                  {follow.username}
-                </strong>
-                <p className="text-muted">{follow.fullName}</p>
+    <>
+      <Modal show={showModal} onHide={hideModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title className="profile-header-following-title">
+            Following
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {postCreatorFollowing.map((follow) => {
+            return (
+              <div
+                key={follow.id + Math.random()}
+                className="profile-header-following-container"
+              >
+                <img
+                  src={follow.profileImage}
+                  alt="following"
+                  className="profile-header-following-img"
+                  data-id={follow.id}
+                  onClick={goToUserProfile}
+                />
+                <div className="profile-header-following-text">
+                  <strong onClick={goToUserProfile} data-id={follow.id}>
+                    {follow.username}
+                  </strong>
+                  <p className="text-muted">{follow.fullName}</p>
+                </div>
+                {uid !== follow.id && (
+                  <>
+                    {currentUserFollowing.includes(follow.id) ? (
+                      <button
+                        className="profile-header-following-button"
+                        data-id={follow.id}
+                        onClick={(e) => {
+                          setClickedUserId(e.target.dataset.id);
+                          setShowUserStatusModal(true);
+                        }}
+                      >
+                        Following
+                      </button>
+                    ) : (
+                      <button
+                        className="profile-header-following-button"
+                        data-id={follow.id}
+                        onClick={followUser}
+                      >
+                        Follow
+                      </button>
+                    )}
+                  </>
+                )}
               </div>
-              {uid !== follow.id && (
-                <>
-                  {currentUserFollowing.includes(follow.id) ? (
-                    <button className="profile-header-following-button">
-                      Following
-                    </button>
-                  ) : (
-                    <button
-                      className="profile-header-following-button"
-                      data-id={follow.id}
-                      onClick={followUser}
-                    >
-                      Follow
-                    </button>
-                  )}
-                </>
-              )}
-            </div>
-          );
-        })}
-      </Modal.Body>
-    </Modal>
+            );
+          })}
+        </Modal.Body>
+      </Modal>
+
+      <ProfileHeaderUserStatusModal
+        showModal={showUserStatusModal}
+        hideModal={() => setShowUserStatusModal(false)}
+        userId={clickedUserId}
+        uid={uid}
+        userProfileImage={clickedUser && clickedUser.profileImage}
+        username={clickedUser && clickedUser.username}
+      />
+    </>
   );
 }
 
