@@ -4,7 +4,7 @@ import AddComment from "../AddComment";
 import { projectFirestore } from "../../firebase/config";
 import formatTimestamp from "../../utils/formatTimestamp";
 
-const Comments = ({ showAddComment = true, post }) => {
+const Comments = ({ showAddComment = true, post, showAllComments = false }) => {
   const [comments, setComments] = useState([]);
   const postId = post && post.id;
 
@@ -28,7 +28,11 @@ const Comments = ({ showAddComment = true, post }) => {
       <div className="comments-container">
         {comments.length === 0
           ? "No comments yet!"
-          : comments.map((comment) => {
+          : showAllComments
+          ? comments.map((comment) => {
+              return <Comment key={comment.id} comment={comment} post={post} />;
+            })
+          : comments.slice(0, 2).map((comment) => {
               return <Comment key={comment.id} comment={comment} post={post} />;
             })}
         {showAddComment && (
