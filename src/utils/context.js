@@ -1,29 +1,29 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { projectAuth } from "../firebase/config";
 import { generateUserDocument } from "../firebase/user";
 
+const GlobalStateContext = React.createContext(null);
+
 const Context = ({ children }) => {
-  const [userObj, setUserObj] = useState({
-    user: null,
-  });
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const unsub = projectAuth.onAuthStateChanged(async (userAuth) => {
       const user = await generateUserDocument(userAuth);
-      setUserObj({ user });
+      setUser(user);
     });
 
     return () => unsub();
   }, []);
 
   return (
-    <GlobalStateContext.Provider value={userObj.user}>
+    <GlobalStateContext.Provider value={user}>
       {children}
     </GlobalStateContext.Provider>
   );
 };
 
-export const GlobalStateContext = React.createContext({
-  user: null,
-});
+export function useGlobalContext() {
+  return useContext(GlobalStateContext);
+}
 export default Context;
