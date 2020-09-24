@@ -11,8 +11,6 @@ import CommentLikesModal from "../CommentLikesModal";
 const Comment = ({ comment, post }) => {
   const [liked, setLiked] = useState(false);
   const [showLikesModal, setShowLikesModal] = useState(false);
-  const [likedCommentUsers, setLikedCommentUsers] = useState([]);
-  const [currentUserFollowing, setCurrentUserFollowing] = useState([]);
   const history = useHistory();
   const context = useGlobalContext();
   const uid = context && context.uid;
@@ -29,32 +27,6 @@ const Comment = ({ comment, post }) => {
 
     return () => unsub();
   }, [comment.postId, comment.id, uid]);
-
-  useEffect(() => {
-    comment.likes.forEach((id) => {
-      requester
-        .get("instagramUsers", id)
-        .then((res) => {
-          setLikedCommentUsers((prevLikes) => {
-            return [...prevLikes, { id: res.id, ...res.data() }];
-          });
-        })
-        .catch(console.error);
-    });
-  }, [comment.likes]);
-
-  useEffect(() => {
-    const unsub = projectFirestore
-      .collection("instagramUsers")
-      .doc(uid)
-      .onSnapshot((snapshot) => {
-        setCurrentUserFollowing((prevFollowing) => {
-          return [...prevFollowing, snapshot.data().following];
-        });
-      });
-
-    return () => unsub();
-  }, [uid]);
 
   const goToUserProfile = () => {
     history.push(`/profile/${comment.creatorId}`);
@@ -111,7 +83,7 @@ const Comment = ({ comment, post }) => {
   };
 
   return (
-    <>
+    <div>
       <div className="comment-container">
         <p>
           <strong onClick={goToUserProfile} style={{ cursor: "pointer" }}>
@@ -135,14 +107,12 @@ const Comment = ({ comment, post }) => {
         )}
         <p className="text-muted">Reply</p>
       </div>
-
       <CommentLikesModal
         showModal={showLikesModal}
         hideModal={closeLikesModal}
-        likedCommentUsers={likedCommentUsers}
-        currentUserFollowing={currentUserFollowing}
+        likes={comment.likes}
       />
-    </>
+    </div>
   );
 };
 
