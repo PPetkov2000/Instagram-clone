@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { Navbar, Nav } from "react-bootstrap";
 import {
@@ -10,7 +10,7 @@ import {
 } from "react-icons/bs";
 import { FcLike } from "react-icons/fc";
 import { projectFirestore } from "../../firebase/config";
-import { GlobalStateContext } from "../../utils/context";
+import { useGlobalContext } from "../../utils/context";
 import PostNavbarModal from "../PostNavbarModal";
 import requester from "../../firebase/requester";
 
@@ -19,7 +19,7 @@ const PostNavbar = ({ post }) => {
   const [saved, setSaved] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const history = useHistory();
-  const context = useContext(GlobalStateContext);
+  const context = useGlobalContext();
   const uid = context && context.uid;
 
   useEffect(() => {
