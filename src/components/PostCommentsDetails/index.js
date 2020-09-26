@@ -1,10 +1,10 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Card } from "react-bootstrap";
 import PostNavbar from "../PostNavbar";
 import Comments from "../Comments";
 import AddComment from "../AddComment";
-import { GlobalStateContext } from "../../utils/context";
+import { useGlobalContext } from "../../utils/context";
 import { projectFirestore } from "../../firebase/config";
 import requester from "../../firebase/requester";
 import formatTimestamp from "../../utils/formatTimestamp";
@@ -20,7 +20,7 @@ const PostCommentsDetails = (props) => {
   const [post, setPost] = useState();
   const [isFollowing, setIsFollowing] = useState(false);
   const [postCreatorProfileImage, setPostCreatorProfileImage] = useState();
-  const context = useContext(GlobalStateContext);
+  const context = useGlobalContext();
   const uid = context && context.uid;
   const postCreator = post && post.creator;
 
@@ -137,7 +137,11 @@ const PostCommentsDetails = (props) => {
             )}
           </Card.Header>
           <Card.Body>
-            <Comments showAddComment={false} post={post} />
+            <Comments
+              showAddComment={false}
+              post={post}
+              showAllComments={true}
+            />
           </Card.Body>
           <Card.Footer className="post-details-footer">
             <PostNavbar post={post} />
