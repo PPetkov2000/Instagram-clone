@@ -577,7 +577,8 @@
 }
 
 .profile-header-followers-button,
-.profile-header-following-button {
+.profile-header-following-button,
+.comment-likes-following-button {
   margin-left: auto;
   font-weight: bold;
   background-color: #fff;
@@ -586,7 +587,7 @@
   border-radius: 0.2rem;
 }
 
-.comment-likes-button {
+.comment-likes-follow-button {
   background-color: #007bff;
   color: #fff;
   font-weight: bold;
