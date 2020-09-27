@@ -71,7 +71,7 @@ const PostModal = ({ showModal, hideOptions, postId, userId, postCreator }) => {
   };
 
   return (
-    <Modal show={showModal} onHide={hideOptions}>
+    <Modal show={showModal} onHide={hideOptions} centered>
       <Modal.Body className="modal-body">
         <ListGroup variant="flush" className="text-center">
           <ListGroup.Item action className="text-danger">
