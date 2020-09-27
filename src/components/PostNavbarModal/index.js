@@ -3,7 +3,7 @@ import { Modal, ListGroup } from "react-bootstrap";
 
 const PostNavbarModal = ({ showModal, hideOptions }) => {
   return (
-    <Modal show={showModal} onHide={hideOptions}>
+    <Modal show={showModal} onHide={hideOptions} centered>
       <Modal.Header closeButton>
         <Modal.Title className="modal-title">Share</Modal.Title>
       </Modal.Header>
