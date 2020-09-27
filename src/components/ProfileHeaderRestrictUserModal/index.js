@@ -3,7 +3,7 @@ import { Modal, ListGroup } from "react-bootstrap";
 
 function ProfileHeaderRestrictUserModal({ showModal, hideModal }) {
   return (
-    <Modal show={showModal} onHide={hideModal}>
+    <Modal show={showModal} onHide={hideModal} centered>
       <Modal.Body className="profile-header-restrict-user-body">
         <ListGroup variant="flush">
           <ListGroup.Item action className="text-danger">
