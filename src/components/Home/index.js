@@ -3,22 +3,21 @@ import Stories from "../Stories";
 import Posts from "../Posts";
 import UploadForm from "../UploadForm";
 import Aside from "../Aside";
-import Context from "../../context";
+import { useGlobalContext } from "../../utils/context";
 
 const Home = () => {
+  const context = useGlobalContext();
+
   return (
-    <Context>
-      <div className="main-container">
-        <div className="main-container-content">
-          <UploadForm />
-          <Stories />
-          <Posts />
-        </div>
-        <Aside />
+    <div className="main-container">
+      <div className="main-container-content">
+        <UploadForm />
+        <Stories />
+        {context && <Posts uid={context.uid} />}
       </div>
-    </Context>
+      <Aside />
+    </div>
   );
 };
 
 export default Home;
-
