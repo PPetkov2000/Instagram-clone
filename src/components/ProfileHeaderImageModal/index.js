@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, ListGroup, FormControl } from "react-bootstrap";
-import { projectStorage, projectFirestore } from "../../firebase/config";
+import { projectStorage } from "../../firebase/config";
+import requester from "../../firebase/requester";
 
 const ProfileHeaderImageModal = ({
   showProfileImage,
@@ -31,10 +32,10 @@ const ProfileHeaderImageModal = ({
         },
         () => {
           uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
-            projectFirestore
-              .collection("instagramUsers")
-              .doc(userId)
-              .update({ profileImage: downloadURL })
+            requester
+              .update("instagramUsers", userId, {
+                profileImage: downloadURL,
+              })
               .then(() => console.log("Uploaded Successfully!"))
               .catch(console.error);
           });
@@ -58,10 +59,10 @@ const ProfileHeaderImageModal = ({
   };
 
   const removeProfilePicture = () => {
-    projectFirestore
-      .collection("instagramUsers")
-      .doc(userId)
-      .update({ profileImage: "/images/user_icon.png" })
+    requester
+      .update("instagramUsers", userId, {
+        profileImage: "/images/user_icon.png",
+      })
       .then(() => console.log("Removed Successfully!"))
       .catch(console.error);
 
@@ -69,7 +70,7 @@ const ProfileHeaderImageModal = ({
   };
 
   return (
-    <Modal show={showProfileImage} onHide={hideProfileImageOptions}>
+    <Modal show={showProfileImage} onHide={hideProfileImageOptions} centered>
       <Modal.Header closeButton>
         <Modal.Title className="profile-header-modal-title">
           <h5>Change Profile Photo</h5>
