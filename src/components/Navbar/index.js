@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Navbar,
   Nav,
@@ -20,13 +20,16 @@ import {
 import { Link, useHistory } from "react-router-dom";
 import NotificationsItem from "../NotificationsItem";
 import { projectAuth, projectFirestore } from "../../firebase/config";
-import { GlobalStateContext } from "../../utils/context";
+import { useGlobalContext } from "../../utils/context";
+import requester from "../../firebase/requester";
 
 const NavBar = () => {
-  const [notifications, setNotifications] = useState([]);
-  const [currentUserProfileImage, setCurrentUserProfileImage] = useState();
+  const [currentUser, setCurrentUser] = useState();
+  const [search, setSearch] = useState("");
+  const [searchedResults, setSearchedResults] = useState();
+  const [availableContacts, setAvailableContacts] = useState([]);
   const history = useHistory();
-  const context = useContext(GlobalStateContext);
+  const context = useGlobalContext();
   const uid = context && context.uid;
 
   useEffect(() => {
@@ -36,12 +39,33 @@ const NavBar = () => {
       .collection("instagramUsers")
       .doc(uid)
       .onSnapshot((snapshot) => {
-        setNotifications(snapshot.data().notifications);
-        setCurrentUserProfileImage(snapshot.data().profileImage);
+        setCurrentUser({ id: snapshot.id, ...snapshot.data() });
       });
 
     return () => unsub();
   }, [uid]);
+
+  useEffect(() => {
+    requester
+      .getAll("instagramUsers")
+      .then((res) => {
+        const users = res.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setAvailableContacts(users);
+      })
+      .catch(console.error);
+  }, []);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      availableContacts.forEach((contact) => {
+        if (search !== "" && contact.username.includes(search)) {
+          console.log(`Match: ${contact.username} => ${search}`);
+        }
+      });
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [search, availableContacts]);
 
   const logoutUser = () => {
     projectAuth
@@ -66,7 +90,13 @@ const NavBar = () => {
         </Link>
       </Navbar.Brand>
       <Form inline>
-        <FormControl type="text" placeholder="Search" className="mr-sm-2" />
+        <FormControl
+          type="text"
+          placeholder="Search"
+          className="mr-sm-2"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </Form>
       <Nav>
         <Nav.Link
@@ -102,17 +132,18 @@ const NavBar = () => {
               <Popover>
                 <Popover.Content>
                   <ListGroup variant="flush">
-                    {notifications
-                      .sort((a, b) => b.timestamp - a.timestamp)
-                      .slice(0, 5)
-                      .map((notification) => {
-                        return (
-                          <NotificationsItem
-                            key={notification.timestamp}
-                            notification={notification}
-                          />
-                        );
-                      })}
+                    {currentUser &&
+                      currentUser.notifications
+                        .sort((a, b) => b.timestamp - a.timestamp)
+                        .slice(0, 5)
+                        .map((notification) => {
+                          return (
+                            <NotificationsItem
+                              key={notification.timestamp}
+                              notification={notification}
+                            />
+                          );
+                        })}
                   </ListGroup>
                 </Popover.Content>
               </Popover>
@@ -150,7 +181,7 @@ const NavBar = () => {
             }
           >
             <img
-              src={currentUserProfileImage}
+              src={currentUser && currentUser.profileImage}
               alt="profile"
               className="navbar-profile-img"
             />
