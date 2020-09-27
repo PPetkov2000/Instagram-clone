@@ -8,15 +8,20 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const history = useHistory();
 
-  const loginUser = (e) => {
+  const loginUser = async (e) => {
     e.preventDefault();
-    projectAuth
-      .signInWithEmailAndPassword(email, password)
-      .then(() => {
-        console.log("Logged in successfully!");
-        history.push("/");
-      })
-      .catch(console.error);
+
+    try {
+      const { user } = await projectAuth.signInWithEmailAndPassword(
+        email,
+        password
+      );
+      localStorage.setItem("userId", user.uid);
+      history.push("/");
+      console.log("Logged in successfully!");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
