@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { BsGearWide, BsFillPersonCheckFill, BsThreeDots } from "react-icons/bs";
 import ProfileHeaderImageModal from "../ProfileHeaderImageModal";
@@ -8,7 +8,7 @@ import ProfileHeaderFollowingModal from "../ProfileHeaderFollowingModal";
 import ProfileHeaderUserStatusModal from "../ProfileHeaderUserStatusModal";
 import ProfileHeaderRestrictUserModal from "../ProfileHeaderRestrictUserModal";
 import { projectFirestore } from "../../firebase/config";
-import { GlobalStateContext } from "../../utils/context";
+import { useGlobalContext } from "../../utils/context";
 import requester from "../../firebase/requester";
 
 const ProfileHeader = ({ userId }) => {
@@ -24,7 +24,7 @@ const ProfileHeader = ({ userId }) => {
   const [currentUser, setCurrentUser] = useState();
   const [isFollowingUser, setIsFollowingUser] = useState();
   const history = useHistory();
-  const context = useContext(GlobalStateContext);
+  const context = useGlobalContext();
   const uid = context && context.uid;
 
   const showProfileImageOptions = () => {
