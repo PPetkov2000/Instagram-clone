@@ -1,6 +1,6 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { Form, Button } from "react-bootstrap";
-import { GlobalStateContext } from "../../utils/context";
+import { useGlobalContext } from "../../utils/context";
 import ProfileSettingsFormGroup from "../ProfileSettingsFormGroup";
 import { projectAuth } from "../../firebase/config";
 
@@ -8,7 +8,7 @@ function ProfileChangePassword() {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const context = useContext(GlobalStateContext);
+  const context = useGlobalContext();
 
   const handleChangePassword = (e) => {
     e.preventDefault();
