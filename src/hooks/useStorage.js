@@ -1,13 +1,13 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import {
   projectStorage,
   projectFirestore,
   timestamp,
 } from "../firebase/config";
-import { GlobalStateContext } from "../context";
+import { useGlobalContext } from "../utils/context";
 
 const useStorage = (file) => {
-  const context = useContext(GlobalStateContext);
+  const context = useGlobalContext();
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
   const [url, setUrl] = useState(null);
@@ -29,14 +29,12 @@ const useStorage = (file) => {
       },
       async () => {
         const url = await storageRef.getDownloadURL();
-
         const createdAt = timestamp();
 
         imagesRef.add({ url, createdAt });
         postsRef.add({
           creator: uid,
           username,
-          userImageUrl: "/images/user_icon.png",
           imageUrl: url,
           timestamp: timestamp(),
           likes: [],
