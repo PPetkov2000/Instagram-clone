@@ -1,12 +1,9 @@
 import React from "react";
 import { Modal, ListGroup } from "react-bootstrap";
 
-const ProfileHeaderSettingsModal = ({
-  showProfileSettings,
-  hideProfileSettingsOptions,
-}) => {
+const ProfileHeaderSettingsModal = ({ showModal, hideModal }) => {
   return (
-    <Modal show={showProfileSettings} onHide={hideProfileSettingsOptions}>
+    <Modal show={showModal} onHide={hideModal} centered>
       <Modal.Body className="modal-body">
         <ListGroup variant="flush" className="text-center">
           <ListGroup.Item action>Change Password</ListGroup.Item>
@@ -18,7 +15,7 @@ const ProfileHeaderSettingsModal = ({
           <ListGroup.Item action>Emails from Instagram</ListGroup.Item>
           <ListGroup.Item action>Report a Problem</ListGroup.Item>
           <ListGroup.Item action>Log Out</ListGroup.Item>
-          <ListGroup.Item action onClick={hideProfileSettingsOptions}>
+          <ListGroup.Item action onClick={hideModal}>
             Cancel
           </ListGroup.Item>
         </ListGroup>
