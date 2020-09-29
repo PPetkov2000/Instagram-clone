@@ -1,7 +1,12 @@
 import React from "react";
+import { BsPersonSquare } from "react-icons/bs";
+import { useGlobalContext } from "../../utils/context";
 
-const ProfileTagged = () => {
-  return (
+const ProfileTagged = ({ userId }) => {
+  const context = useGlobalContext();
+  const uid = context && context.uid;
+
+  return uid === userId ? (
     <>
       <img src="/images/profile_image.jpg" alt="profile" />
       <div className="user-profile-activities-content">
@@ -17,6 +22,13 @@ const ProfileTagged = () => {
         </div>
       </div>
     </>
+  ) : (
+    <div className="user-profile-activities-tagged-container">
+      <div className="user-profile-activities-tagged-content">
+        <BsPersonSquare className="user-profile-activities-tagged-icon" />
+        <p className="user-profile-activities-tagged-text">No Photos</p>
+      </div>
+    </div>
   );
 };
 
