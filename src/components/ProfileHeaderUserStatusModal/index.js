@@ -34,15 +34,7 @@ function ProfileHeaderUserStatusModal({
             followers: unfollowedUserFollowers,
             notifications: unfollowedUserNotifications,
           }),
-        ])
-          .then(() => {
-            console.log(
-              `${currentUser.data().username} unfollowed ${
-                unfollowedUser.data().username
-              }`
-            );
-          })
-          .catch(console.error);
+        ]);
       })
       .catch(console.error);
 
@@ -50,7 +42,7 @@ function ProfileHeaderUserStatusModal({
   };
 
   return (
-    <Modal show={showModal} onHide={hideModal}>
+    <Modal show={showModal} onHide={hideModal} centered>
       <Modal.Header className="profile-header-user-status-header">
         <img
           src={userProfileImage}
