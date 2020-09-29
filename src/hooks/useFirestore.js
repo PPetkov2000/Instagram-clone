@@ -7,7 +7,7 @@ const useFirestore = (collection) => {
   useEffect(() => {
     const unsub = projectFirestore
       .collection(collection)
-      .orderBy("createdAt", "desc")
+      .orderBy("timestamp", "desc")
       .onSnapshot((snapshot) => {
         setDocs(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
       });
