@@ -1,0 +1,37 @@
+.navbar {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 1.6rem;
+
+  &__icon {
+    font-size: 1.6rem;
+    padding: 0;
+  }
+
+  &__profile-image {
+    width: 30px;
+    height: 30px;
+    border: 1px solid lightgray;
+    border-radius: 50%;
+  }
+
+  &__profile-popover {
+    width: 200px;
+  }
+
+  &__profile-popover a {
+    display: flex;
+    align-items: center;
+    color: black;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+
+    &:link {
+      text-decoration: none;
+    }
+  }
+
+  &__profile-popover-icon {
+    margin-right: 0.5rem;
+  }
+}
