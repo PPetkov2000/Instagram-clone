@@ -1,14 +1,14 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import "./App.css";
-import Home from "./components/Home";
-import PostCommentsDetails from "./components/PostCommentsDetails";
+import "./App.scss";
+import Home from "./screens/Home";
+import PostCommentsDetails from "./screens/PostCommentsDetails";
 import Navbar from "./components/Navbar";
-import Messages from "./components/Messages";
-import Profile from "./components/Profile";
-import Register from "./components/Register";
-import Login from "./components/Login";
-import ProfileSettings from "./components/ProfileSettings";
+import Messages from "./screens/Messages";
+import Profile from "./screens/Profile";
+import Register from "./screens/Register";
+import Login from "./screens/Login";
+import ProfileSettings from "./screens/ProfileSettings";
 import Context from "./utils/context";
 
 const App = () => {
@@ -24,9 +24,9 @@ const App = () => {
             component={PostCommentsDetails}
           />
           <Route path="/profile/:id" component={Profile} />
+          <Route path="/edit/:id" component={ProfileSettings} />
           <Route path="/register" component={Register} />
           <Route path="/login" component={Login} />
-          <Route path="/edit/:id" component={ProfileSettings} />
         </Switch>
       </Router>
     </Context>
