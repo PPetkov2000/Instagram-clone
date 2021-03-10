@@ -9,8 +9,8 @@ const Context = ({ children }) => {
 
   useEffect(() => {
     const unsub = projectAuth.onAuthStateChanged(async (userAuth) => {
-      const user = await generateUserDocument(userAuth);
-      setUser(user);
+      const userInfo = await generateUserDocument(userAuth);
+      setUser(userInfo);
     });
 
     return () => unsub();
