@@ -101,7 +101,7 @@ const NavBar = () => {
       <Nav>
         <Nav.Link
           href="/"
-          className="nav-icon"
+          className="navbar__icon"
           onClick={(e) => {
             e.preventDefault();
             history.push("/");
@@ -111,7 +111,7 @@ const NavBar = () => {
         </Nav.Link>
         <Nav.Link
           href="/messages"
-          className="nav-icon"
+          className="navbar__icon"
           onClick={(e) => {
             e.preventDefault();
             history.push("/messages");
@@ -119,10 +119,10 @@ const NavBar = () => {
         >
           <BsCursor />
         </Nav.Link>
-        <Nav.Link href="#features" className="nav-icon">
+        <Nav.Link href="#features" className="navbar__icon">
           <BsCompass />
         </Nav.Link>
-        <Nav.Link href="#notifications" className="nav-icon">
+        <Nav.Link href="#notifications" className="navbar__icon">
           <OverlayTrigger
             trigger="click"
             rootClose
@@ -152,25 +152,25 @@ const NavBar = () => {
             <BsHeart />
           </OverlayTrigger>
         </Nav.Link>
-        <Nav.Link href="#profile" className="nav-icon">
+        <Nav.Link href="#profile" className="navbar__icon">
           <OverlayTrigger
             trigger="click"
             rootClose
             key="bottom"
             placement="bottom"
             overlay={
-              <Popover className="navbar-profile-popover">
+              <Popover className="navbar__profile-popover">
                 <Popover.Content>
                   <Link to={`/profile/${context && context.uid}`}>
-                    <BsPeopleCircle className="navbar-profile-popover-icon" />
+                    <BsPeopleCircle className="navbar__profile-popover-icon" />
                     Profile
                   </Link>
                   <Link to="/saved">
-                    <BsBookmark className="navbar-profile-popover-icon" />
+                    <BsBookmark className="navbar__profile-popover-icon" />
                     Saved
                   </Link>
                   <Link to={`/edit/${context && context.uid}`}>
-                    <BsGearWide className="navbar-profile-popover-icon" />
+                    <BsGearWide className="navbar__profile-popover-icon" />
                     Settings
                   </Link>
                   <p style={{ cursor: "pointer" }} onClick={logoutUser}>
@@ -183,7 +183,7 @@ const NavBar = () => {
             <img
               src={currentUser && currentUser.profileImage}
               alt="profile"
-              className="navbar-profile-img"
+              className="navbar__profile-image"
             />
           </OverlayTrigger>
         </Nav.Link>
