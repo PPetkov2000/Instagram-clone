@@ -41,12 +41,12 @@ const Stories = () => {
   ]);
 
   return (
-    <div className="stories-container">
+    <div className="stories">
       {stories.map((story) => {
         return <Story key={story.storyId} story={story} />;
       })}
     </div>
   );
-}
+};
 
 export default Stories;
