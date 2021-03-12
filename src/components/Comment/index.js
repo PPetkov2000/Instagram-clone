@@ -84,28 +84,30 @@ const Comment = ({ comment, post }) => {
 
   return (
     <div>
-      <div className="comment-container">
-        <p>
+      <div className="comment">
+        <p className="comment__text">
           <strong onClick={goToUserProfile} style={{ cursor: "pointer" }}>
             {comment.creatorUsername}
           </strong>{" "}
           {comment.text}
         </p>
         {liked ? (
-          <FcLike className="comment-icon" onClick={likeAndDislikeComment} />
+          <FcLike className="comment__icon" onClick={likeAndDislikeComment} />
         ) : (
-          <BsHeart className="comment-icon" onClick={likeAndDislikeComment} />
+          <BsHeart className="comment__icon" onClick={likeAndDislikeComment} />
         )}
       </div>
-      <div className="comment-details">
-        <p className="text-muted">{formatTimestamp(comment.timestamp)}</p>
+      <div className="comment__details">
+        <p className="comment__details-text">
+          {formatTimestamp(comment.timestamp)}
+        </p>
         {comment.likes.length > 0 && (
-          <p className="text-muted" onClick={openLikesModal}>
+          <p className="comment__details-text" onClick={openLikesModal}>
             {comment.likes.length}{" "}
             {comment.likes.length === 1 ? "like" : "likes"}
           </p>
         )}
-        <p className="text-muted">Reply</p>
+        <p className="comment__details-text">Reply</p>
       </div>
       <CommentLikesModal
         showModal={showLikesModal}
