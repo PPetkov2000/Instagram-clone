@@ -34,6 +34,8 @@ const PostNavbar = ({ post }) => {
   }, [post.id, uid]);
 
   useEffect(() => {
+    if (uid == null) return;
+
     const unsub = projectFirestore
       .collection("instagramUsers")
       .doc(uid)
@@ -108,7 +110,7 @@ const PostNavbar = ({ post }) => {
   return (
     <>
       <Navbar className="posts-navbar">
-        <Nav>
+        <Nav className="posts-navbar__links">
           <Nav.Link
             href="#like"
             className="nav-icon"
@@ -125,7 +127,7 @@ const PostNavbar = ({ post }) => {
           </Nav.Link>
           <Nav.Link
             href="#bookmark"
-            className="nav-icon posts-navbar-nav"
+            className="nav-icon posts-navbar__nav"
             onClick={saveAndUnSavePost}
           >
             {saved ? <BsFillBookmarkFill /> : <BsBookmark />}
