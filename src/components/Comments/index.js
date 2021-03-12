@@ -25,7 +25,7 @@ const Comments = ({ showAddComment = true, post, showAllComments = false }) => {
 
   return (
     <>
-      <div className="comments-container">
+      <div className="comments">
         {comments.length === 0
           ? "No comments yet!"
           : showAllComments
@@ -36,7 +36,7 @@ const Comments = ({ showAddComment = true, post, showAllComments = false }) => {
               return <Comment key={comment.id} comment={comment} post={post} />;
             })}
         {showAddComment && (
-          <p className="text-muted">{formatTimestamp(post.timestamp)}</p>
+          <p className="comments__text">{formatTimestamp(post.timestamp)}</p>
         )}
       </div>
       {showAddComment && <AddComment post={post} />}
