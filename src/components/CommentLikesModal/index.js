@@ -4,7 +4,7 @@ import { Modal } from "react-bootstrap";
 import { useGlobalContext } from "../../utils/context";
 import { projectFirestore } from "../../firebase/config";
 import requester from "../../firebase/requester";
-import ProfileHeaderUserStatusModal from "../ProfileHeaderUserStatusModal";
+import ProfileHeaderUserStatusModal from "../Profile/ProfileHeaderUserStatusModal";
 
 function CommentLikesModal({ showModal, hideModal, likes }) {
   const [likedCommentUsers, setLikedCommentUsers] = useState([]);
@@ -30,6 +30,8 @@ function CommentLikesModal({ showModal, hideModal, likes }) {
   }, [likes]);
 
   useEffect(() => {
+    if (uid == null) return;
+
     const unsub = projectFirestore
       .collection("instagramUsers")
       .doc(uid)
