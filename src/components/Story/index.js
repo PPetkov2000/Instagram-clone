@@ -3,17 +3,15 @@ import { Figure } from "react-bootstrap";
 
 const Story = ({ story }) => {
   return (
-    <Figure>
+    <Figure className="stories__story">
       <Figure.Image
-        width={70}
-        height={70}
         alt="user_image"
         src={story.userImageUrl}
-        className="figure-img"
+        className="stories__story-image"
       />
       <Figure.Caption className="text-center">{story.username}</Figure.Caption>
     </Figure>
   );
-}
+};
 
 export default Story;
