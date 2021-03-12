@@ -6,28 +6,18 @@ import Comments from "../Comments";
 import PostNavbar from "../PostNavbar";
 import PostModal from "../PostModal";
 import { projectFirestore } from "../../firebase/config";
+import CommentLikesModal from "../CommentLikesModal";
 
 export default function Post({ post, uid }) {
-  const [showModal, setShowModal] = useState(false);
-  const [likes, setLikes] = useState([]);
-  const [postCreator, setPostCreator] = useState();
+  const [showOptionsModal, setShowOptionsModal] = useState(false);
+  const [showCommentLikesModal, setShowCommentLikesModal] = useState(false);
   const [currentUserProfileImage, setCurrentUserProfileImage] = useState();
   const [postCreatorProfileImage, setPostCreatorProfileImage] = useState();
 
-  const showOptions = () => setShowModal(true);
-  const hideOptions = () => setShowModal(false);
-
-  useEffect(() => {
-    const unsub = projectFirestore
-      .collection("posts")
-      .doc(post.id)
-      .onSnapshot((snapshot) => {
-        setLikes(snapshot.data().likes);
-        setPostCreator(snapshot.data().creator);
-      });
-
-    return () => unsub();
-  }, [post.id]);
+  const showOptions = () => setShowOptionsModal(true);
+  const hideOptions = () => setShowOptionsModal(false);
+  const showCommentLikes = () => setShowCommentLikesModal(true);
+  const hideCommentLikes = () => setShowCommentLikesModal(false);
 
   useEffect(() => {
     if (uid == null) return;
@@ -43,60 +33,64 @@ export default function Post({ post, uid }) {
   }, [uid]);
 
   useEffect(() => {
-    if (postCreator == null) return;
+    if (post.creator == null) return;
 
     const unsub = projectFirestore
       .collection("instagramUsers")
-      .doc(postCreator)
+      .doc(post.creator)
       .onSnapshot((snapshot) => {
         setPostCreatorProfileImage(snapshot.data().profileImage);
       });
 
     return () => unsub();
-  }, [postCreator]);
+  }, [post.creator]);
 
   return (
     <>
       <Card className="post mb-5">
-        <Card.Header className="card-header">
-          <Link to={`/profile/${postCreator}`}>
+        <Card.Header className="post__header">
+          <Link to={`/profile/${post.creator}`}>
             <Card.Img
               variant="top"
               src={
-                uid === postCreator
+                uid === post.creator
                   ? currentUserProfileImage
                   : postCreatorProfileImage
               }
-              className="card-header-img"
+              className="post__header-image"
             />
           </Link>
           <span>{post.username}</span>
           <Card.Link href="#properties" onClick={showOptions}>
-            <BsThreeDots className="float-right text-dark navbar-header-dots" />
+            <BsThreeDots className="float-right text-dark post__options-icon" />
           </Card.Link>
         </Card.Header>
-        <Card.Img variant="top" src={post.imageUrl} height="600px" />
+        <Card.Img variant="top" src={post.imageUrl} height="500px" />
         <Card.Body>
           <PostNavbar post={post} />
-          <Card.Text className="mt-2 mb-2">
-            {likes.length === 0 ? (
-              <strong>No likes</strong>
-            ) : likes.length === 1 ? (
-              <strong>{likes.length} like</strong>
-            ) : (
-              <strong>{likes.length} likes</strong>
-            )}
-          </Card.Text>
+          <button className="post__likes-button" onClick={showCommentLikes}>
+            {post.likes.length === 0
+              ? "No likes"
+              : post.likes.length === 1
+              ? "1 like"
+              : post.likes.length + " likes"}
+          </button>
           <Comments post={post} />
         </Card.Body>
       </Card>
 
       <PostModal
-        showModal={showModal}
+        showModal={showOptionsModal}
         hideOptions={hideOptions}
         postId={post.id}
         userId={uid}
         postCreator={post.creator}
+      />
+
+      <CommentLikesModal
+        showModal={showCommentLikesModal}
+        hideModal={hideCommentLikes}
+        likes={post.likes}
       />
     </>
   );
