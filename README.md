@@ -2,5 +2,5 @@
 
 ## Website
 
-![Instagram-Clone](https://github.com/PPetkov2000/instagram-clone/blob/main/app-view.png)
+![Instagram-Clone](https://github.com/PPetkov2000/Instagram-clone/blob/master/app-view.png)
 
