@@ -1,11 +1,6 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+#Instagram Clone
 
-## Available Scripts
+## Website
 
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+![Instagram-Clone](https://github.com/PPetkov2000/instagram-clone/blob/main/app-view.png)
 
