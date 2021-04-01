@@ -7,30 +7,18 @@ import PostNavbar from "../PostNavbar";
 import PostModal from "../PostModal";
 import { projectFirestore } from "../../firebase/config";
 import CommentLikesModal from "../CommentLikesModal";
+import { useGlobalContext } from "../../utils/context";
 
 export default function Post({ post, uid }) {
   const [showOptionsModal, setShowOptionsModal] = useState(false);
   const [showCommentLikesModal, setShowCommentLikesModal] = useState(false);
-  const [currentUserProfileImage, setCurrentUserProfileImage] = useState();
   const [postCreatorProfileImage, setPostCreatorProfileImage] = useState();
+  const authUser = useGlobalContext();
 
   const showOptions = () => setShowOptionsModal(true);
   const hideOptions = () => setShowOptionsModal(false);
   const showCommentLikes = () => setShowCommentLikesModal(true);
   const hideCommentLikes = () => setShowCommentLikesModal(false);
-
-  useEffect(() => {
-    if (uid == null) return;
-
-    const unsub = projectFirestore
-      .collection("instagramUsers")
-      .doc(uid)
-      .onSnapshot((snapshot) => {
-        setCurrentUserProfileImage(snapshot.data().profileImage);
-      });
-
-    return () => unsub();
-  }, [uid]);
 
   useEffect(() => {
     if (post.creator == null) return;
@@ -53,8 +41,8 @@ export default function Post({ post, uid }) {
             <Card.Img
               variant="top"
               src={
-                uid === post.creator
-                  ? currentUserProfileImage
+                authUser.uid === post.creator
+                  ? authUser.profileImage
                   : postCreatorProfileImage
               }
               className="post__header-image"
@@ -83,7 +71,6 @@ export default function Post({ post, uid }) {
         showModal={showOptionsModal}
         hideOptions={hideOptions}
         postId={post.id}
-        userId={uid}
         postCreator={post.creator}
       />
 
