@@ -3,25 +3,27 @@ import { useHistory } from "react-router-dom";
 import { Modal, ListGroup } from "react-bootstrap";
 import { projectFirestore } from "../../firebase/config";
 import requester from "../../firebase/requester";
+import { useGlobalContext } from "../../utils/context";
 
-const PostModal = ({ showModal, hideOptions, postId, userId, postCreator }) => {
-  const [isFollowing, setIsFollowing] = useState(false);
+const PostModal = ({ showModal, hideOptions, postId, postCreator }) => {
+  const [isCurrentUserFollowing, setIsCurrentUserFollowing] = useState(false);
   const history = useHistory();
+  const authUser = useGlobalContext();
 
   useEffect(() => {
-    const unsub = projectFirestore
+    projectFirestore
       .collection("instagramUsers")
-      .doc(userId)
+      .doc(authUser.uid)
       .onSnapshot((snapshot) => {
-        setIsFollowing(snapshot.data().following.includes(postCreator));
+        setIsCurrentUserFollowing(
+          snapshot.data().following.includes(postCreator)
+        );
       });
-
-    return () => unsub();
-  }, [userId, postCreator]);
+  }, [authUser, postCreator]);
 
   const followAndUnfollowUser = () => {
     Promise.all([
-      requester.get("instagramUsers", userId),
+      requester.get("instagramUsers", authUser.uid),
       requester.get("instagramUsers", postCreator),
     ])
       .then(([currentUser, postCreatorUser]) => {
@@ -31,7 +33,7 @@ const PostModal = ({ showModal, hideOptions, postId, userId, postCreator }) => {
 
         if (!currentUserFollowing.includes(postCreator)) {
           currentUserFollowing.push(postCreator);
-          postCreatorUserFollowers.push(userId);
+          postCreatorUserFollowers.push(authUser.uid);
           postCreatorUserNotifications.push({
             id: currentUser.id,
             username: currentUser.data().username,
@@ -44,15 +46,15 @@ const PostModal = ({ showModal, hideOptions, postId, userId, postCreator }) => {
             (x) => x !== postCreator
           );
           postCreatorUserFollowers = postCreatorUserFollowers.filter(
-            (x) => x !== userId
+            (x) => x !== authUser.uid
           );
           postCreatorUserNotifications = postCreatorUserNotifications.filter(
-            (x) => x.id !== userId
+            (x) => x.id !== authUser.uid
           );
         }
 
         return Promise.all([
-          requester.update("instagramUsers", userId, {
+          requester.update("instagramUsers", authUser.uid, {
             following: currentUserFollowing,
           }),
           requester.update("instagramUsers", postCreator, {
@@ -77,9 +79,9 @@ const PostModal = ({ showModal, hideOptions, postId, userId, postCreator }) => {
           <ListGroup.Item action className="text-danger">
             Report
           </ListGroup.Item>
-          {userId !== postCreator && (
+          {authUser.uid !== postCreator && (
             <>
-              {isFollowing ? (
+              {isCurrentUserFollowing ? (
                 <ListGroup.Item
                   action
                   className="text-danger"
