@@ -8,13 +8,21 @@ import ProfileHeaderUserStatusModal from "../Profile/ProfileHeaderUserStatusModa
 
 function CommentLikesModal({ showModal, hideModal, likes }) {
   const [likedCommentUsers, setLikedCommentUsers] = useState([]);
-  const [currentUserFollowing, setCurrentUserFollowing] = useState([]);
   const [showUserStatusModal, setShowUserStatusModal] = useState(false);
   const [clickedUserId, setClickedUserId] = useState();
   const [clickedUser, setClickedUser] = useState();
   const history = useHistory();
-  const context = useGlobalContext();
-  const uid = context && context.uid;
+  const authUser = useGlobalContext();
+  const [authUserFollowing, setAuthUserFollowing] = useState([]);
+
+  useEffect(() => {
+    projectFirestore
+      .collection("instagramUsers")
+      .doc(authUser.uid)
+      .onSnapshot((snapshot) => {
+        setAuthUserFollowing(snapshot.data().following);
+      });
+  }, [authUser]);
 
   useEffect(() => {
     likes.forEach((id) => {
@@ -30,19 +38,6 @@ function CommentLikesModal({ showModal, hideModal, likes }) {
   }, [likes]);
 
   useEffect(() => {
-    if (uid == null) return;
-
-    const unsub = projectFirestore
-      .collection("instagramUsers")
-      .doc(uid)
-      .onSnapshot((snapshot) => {
-        setCurrentUserFollowing(snapshot.data().following);
-      });
-
-    return () => unsub();
-  }, [uid]);
-
-  useEffect(() => {
     if (clickedUserId == null) return;
 
     requester
@@ -53,26 +48,22 @@ function CommentLikesModal({ showModal, hideModal, likes }) {
       .catch(console.error);
   }, [clickedUserId]);
 
-  const goToUserProfile = (e) => {
-    history.push(`/profile/${e.target.dataset.userId}`);
+  const goToUserProfile = () => {
+    history.push(`/profile/${clickedUserId}`);
   };
 
-  const followUser = (e) => {
-    if (uid == null) return;
-
-    const userId = e.target.dataset.userId;
-
+  const followUser = () => {
     Promise.all([
-      requester.get("instagramUsers", uid),
-      requester.get("instagramUsers", userId),
+      requester.get("instagramUsers", authUser.uid),
+      requester.get("instagramUsers", clickedUserId),
     ])
       .then(([currentUser, followedUser]) => {
         const currentUserFollowing = currentUser.data().following;
         const followedUserFollowers = followedUser.data().followers;
         const followedUserNotifications = followedUser.data().notifications;
 
-        currentUserFollowing.push(userId);
-        followedUserFollowers.push(uid);
+        currentUserFollowing.push(clickedUserId);
+        followedUserFollowers.push(authUser.uid);
         followedUserNotifications.push({
           id: currentUser.id,
           username: currentUser.data().username,
@@ -82,10 +73,10 @@ function CommentLikesModal({ showModal, hideModal, likes }) {
         });
 
         return Promise.all([
-          requester.update("instagramUsers", uid, {
+          requester.update("instagramUsers", authUser.uid, {
             following: currentUserFollowing,
           }),
-          requester.update("instagramUsers", userId, {
+          requester.update("instagramUsers", clickedUserId, {
             followers: followedUserFollowers,
             notifications: followedUserNotifications,
           }),
@@ -108,23 +99,19 @@ function CommentLikesModal({ showModal, hideModal, likes }) {
                   src={user.profileImage}
                   alt="user"
                   className="comment-likes-img"
-                  data-user-id={user.id}
                   onClick={goToUserProfile}
                 />
                 <div className="comment-likes-modal-body-text">
-                  <strong data-user-id={user.id} onClick={goToUserProfile}>
-                    {user.username}
-                  </strong>
+                  <strong onClick={goToUserProfile}>{user.username}</strong>
                   <p className="text-muted">{user.fullName}</p>
                 </div>
-                {uid !== user.id && (
+                {authUser.uid !== user.id && (
                   <>
-                    {currentUserFollowing.includes(user.id) ? (
+                    {authUserFollowing.includes(user.id) ? (
                       <button
                         className="comment-likes-following-button"
-                        data-user-id={user.id}
-                        onClick={(e) => {
-                          setClickedUserId(e.target.dataset.userId);
+                        onClick={() => {
+                          setClickedUserId(user.id);
                           setShowUserStatusModal(true);
                         }}
                       >
@@ -133,7 +120,6 @@ function CommentLikesModal({ showModal, hideModal, likes }) {
                     ) : (
                       <button
                         className="comment-likes-follow-button"
-                        data-user-id={user.id}
                         onClick={followUser}
                       >
                         Follow
@@ -150,10 +136,7 @@ function CommentLikesModal({ showModal, hideModal, likes }) {
       <ProfileHeaderUserStatusModal
         showModal={showUserStatusModal}
         hideModal={() => setShowUserStatusModal(false)}
-        userId={clickedUserId}
-        uid={uid}
-        userProfileImage={clickedUser && clickedUser.profileImage}
-        username={clickedUser && clickedUser.username}
+        clickedUser={clickedUser}
       />
     </>
   );
