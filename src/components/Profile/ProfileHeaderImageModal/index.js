@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Modal, ListGroup, FormControl } from "react-bootstrap";
 import { projectStorage } from "../../../firebase/config";
 import requester from "../../../firebase/requester";
+import { useGlobalContext } from "../../../utils/context";
 
 const ProfileHeaderImageModal = ({
   showProfileImage,
   hideProfileImageOptions,
-  userId,
 }) => {
   const [file, setFile] = useState(null);
+  const authUser = useGlobalContext();
 
   useEffect(() => {
     if (file != null) {
@@ -33,7 +34,7 @@ const ProfileHeaderImageModal = ({
         () => {
           uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
             requester
-              .update("instagramUsers", userId, {
+              .update("instagramUsers", authUser.uid, {
                 profileImage: downloadURL,
               })
               .then(() => console.log("Uploaded Successfully!"))
@@ -42,7 +43,7 @@ const ProfileHeaderImageModal = ({
         }
       );
     }
-  }, [file, userId]);
+  }, [file, authUser]);
 
   const types = ["image/png", "image/jpeg"];
 
@@ -60,7 +61,7 @@ const ProfileHeaderImageModal = ({
 
   const removeProfilePicture = () => {
     requester
-      .update("instagramUsers", userId, {
+      .update("instagramUsers", authUser.uid, {
         profileImage: "/images/user_icon.png",
       })
       .then(() => console.log("Removed Successfully!"))
