@@ -11,24 +11,19 @@ import { projectFirestore } from "../../../firebase/config";
 import { useGlobalContext } from "../../../utils/context";
 import requester from "../../../firebase/requester";
 
-const ProfileHeader = ({ userId }) => {
+const ProfileHeader = ({ currentUser, currentUserPosts }) => {
   const [showProfileImage, setShowProfileImage] = useState(false);
   const [showProfileSettings, setShowProfileSettings] = useState(false);
   const [showProfileFollowers, setShowProfileFollowers] = useState(false);
   const [showProfileFollowing, setShowProfileFollowing] = useState(false);
   const [showProfileUserStatus, setShowProfileUserStatus] = useState(false);
   const [showProfileRestrictUser, setShowProfileRestrictUser] = useState(false);
-  const [userPosts, setUserPosts] = useState();
-  const [userFollowers, setUserFollowers] = useState([]);
-  const [userFollowing, setUserFollowing] = useState([]);
-  const [currentUser, setCurrentUser] = useState();
-  const [isFollowingUser, setIsFollowingUser] = useState();
+  const [isFollowingUser, setIsFollowingUser] = useState(false);
   const history = useHistory();
-  const context = useGlobalContext();
-  const uid = context && context.uid;
+  const authUser = useGlobalContext();
 
   const showProfileImageOptions = () => {
-    if (userId === uid) {
+    if (currentUser.id === authUser.uid) {
       setShowProfileImage(true);
     }
   };
@@ -50,59 +45,32 @@ const ProfileHeader = ({ userId }) => {
   const hideProfileRestrictUserModal = () => setShowProfileRestrictUser(false);
 
   useEffect(() => {
-    const unsub = requester
-      .getByCriteria("posts", "creator", userId)
-      .then((res) => {
-        setUserPosts(res.docs.length);
-      });
-
-    return () => unsub;
-  }, [userId]);
-
-  useEffect(() => {
-    if (!userId) return;
+    if (!authUser) return;
 
     const unsub = projectFirestore
       .collection("instagramUsers")
-      .doc(userId)
+      .doc(authUser.uid)
       .onSnapshot((snapshot) => {
-        if (snapshot.data()) {
-          setUserFollowers(snapshot.data().followers);
-          setUserFollowing(snapshot.data().following);
-          setCurrentUser(snapshot.data());
-        }
+        setIsFollowingUser(snapshot.data().following.includes(currentUser.id));
       });
 
     return () => unsub();
-  }, [userId]);
+  }, [authUser, currentUser.id]);
 
-  useEffect(() => {
-    if (uid == null) return;
-
-    const unsub = projectFirestore
-      .collection("instagramUsers")
-      .doc(uid)
-      .onSnapshot((snapshot) => {
-        setIsFollowingUser(snapshot.data().following.includes(userId));
-      });
-
-    return () => unsub();
-  }, [uid, userId]);
-
-  const followUser = () => {
+  const followUser = (followedUserId) => {
     Promise.all([
-      requester.get("instagramUsers", uid),
-      requester.get("instagramUsers", userId),
+      requester.get("instagramUsers", authUser.uid),
+      requester.get("instagramUsers", followedUserId),
     ])
       .then(([currentUser, followedUser]) => {
         const currentUserFollowing = currentUser.data().following;
         const followedUserFollowers = followedUser.data().followers;
         const followedUserNotifications = followedUser.data().notifications;
 
-        currentUserFollowing.push(userId);
-        followedUserFollowers.push(uid);
+        currentUserFollowing.push(followedUserId);
+        followedUserFollowers.push(authUser.uid);
         followedUserNotifications.push({
-          id: currentUser.id,
+          id: followedUserId,
           username: currentUser.data().username,
           profileImage: currentUser.data().profileImage,
           timestamp: new Date(),
@@ -110,10 +78,10 @@ const ProfileHeader = ({ userId }) => {
         });
 
         return Promise.all([
-          requester.update("instagramUsers", uid, {
+          requester.update("instagramUsers", authUser.uid, {
             following: currentUserFollowing,
           }),
-          requester.update("instagramUsers", userId, {
+          requester.update("instagramUsers", followedUserId, {
             followers: followedUserFollowers,
             notifications: followedUserNotifications,
           }),
@@ -126,7 +94,7 @@ const ProfileHeader = ({ userId }) => {
     <header className="user-profile-header">
       <div className="user-profile-img-container">
         <img
-          src={currentUser && currentUser.profileImage}
+          src={currentUser.profileImage}
           alt="user_icon"
           className="user-profile-img"
           onClick={showProfileImageOptions}
@@ -134,12 +102,12 @@ const ProfileHeader = ({ userId }) => {
       </div>
       <div className="user-profile-information">
         <div className="user-profile-information-content">
-          <h3>{currentUser && currentUser.username}</h3>
-          {userId === uid ? (
+          <h3>{currentUser.username}</h3>
+          {currentUser.id === authUser?.uid ? (
             <>
               <button
                 className="user-profile-edit-button"
-                onClick={() => history.push(`/edit/${uid}`)}
+                onClick={() => history.push(`/edit/${authUser.uid}`)}
               >
                 Edit Profile
               </button>
@@ -168,7 +136,7 @@ const ProfileHeader = ({ userId }) => {
               ) : (
                 <button
                   className="user-profile-follow-button"
-                  onClick={followUser}
+                  onClick={() => followUser(currentUser.id)}
                 >
                   Follow
                 </button>
@@ -184,25 +152,28 @@ const ProfileHeader = ({ userId }) => {
         </div>
         <div className="user-profile-information-content">
           <p>
-            <strong>{userPosts}</strong> posts
+            <strong>{currentUserPosts.length}</strong> posts
           </p>
           <p onClick={showProfileFollowersModal} style={{ cursor: "pointer" }}>
-            <strong>{currentUser && currentUser.followers.length}</strong>{" "}
+            <strong>
+              {currentUser.followers && currentUser.followers.length}
+            </strong>{" "}
             followers
           </p>
           <p onClick={showProfileFollowingModal} style={{ cursor: "pointer" }}>
-            <strong>{currentUser && currentUser.following.length}</strong>{" "}
+            <strong>
+              {currentUser.following && currentUser.following.length}
+            </strong>{" "}
             following
           </p>
         </div>
         <div className="user-profile-information-content">
-          <strong>{currentUser && currentUser.fullName}</strong>
+          <strong>{currentUser.fullName}</strong>
         </div>
       </div>
       <ProfileHeaderImageModal
         showProfileImage={showProfileImage}
         hideProfileImageOptions={hideProfileImageOptions}
-        userId={userId}
       />
       <ProfileHeaderSettingsModal
         showModal={showProfileSettings}
@@ -211,25 +182,27 @@ const ProfileHeader = ({ userId }) => {
       <ProfileHeaderUserStatusModal
         showModal={showProfileUserStatus}
         hideModal={hideProfileUserStatusModal}
-        userId={userId}
-        uid={uid}
-        userProfileImage={currentUser && currentUser.profileImage}
-        username={currentUser && currentUser.username}
+        clickedUser={currentUser}
       />
       <ProfileHeaderRestrictUserModal
         showModal={showProfileRestrictUser}
         hideModal={hideProfileRestrictUserModal}
       />
-      <ProfileHeaderFollowersModal
-        showModal={showProfileFollowers}
-        hideModal={hideProfileFollowersModal}
-        userFollowers={userFollowers}
-      />
-      <ProfileHeaderFollowingModal
-        showModal={showProfileFollowing}
-        hideModal={hideProfileFollowingModal}
-        userFollowing={userFollowing}
-      />
+      {currentUser.followers && (
+        <ProfileHeaderFollowersModal
+          showModal={showProfileFollowers}
+          hideModal={hideProfileFollowersModal}
+          userFollowers={currentUser.followers}
+          followUser={followUser}
+        />
+      )}
+      {currentUser.following && (
+        <ProfileHeaderFollowingModal
+          showModal={showProfileFollowing}
+          hideModal={hideProfileFollowingModal}
+          userFollowing={currentUser.following}
+        />
+      )}
     </header>
   );
 };
