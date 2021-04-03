@@ -8,7 +8,7 @@ function ProfileChangePassword() {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const context = useGlobalContext();
+  const authUser = useGlobalContext();
 
   const handleChangePassword = (e) => {
     e.preventDefault();
@@ -30,14 +30,14 @@ function ProfileChangePassword() {
       <div className="change-password__tab-pane-header">
         <div className="change-password__image-wrapper">
           <img
-            src={context && context.profileImage}
+            src={authUser && authUser.profileImage}
             alt="change-password"
             className="change-password__image"
           />
         </div>
         <div className="change-password__tab-pane-text">
           <h4 className="change-password__tab-pane-title">
-            {context && context.username}
+            {authUser && authUser.username}
           </h4>
         </div>
       </div>
