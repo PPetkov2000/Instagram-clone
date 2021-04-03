@@ -63,119 +63,117 @@ const NavBar = () => {
       .catch(console.error);
   };
 
-  return (
-    authUser && (
-      <Navbar bg="light" variant="light" className="navbar">
-        <Navbar.Brand>
-          <Link to="/">
-            <img
-              src="/images/instagram_logo.png"
-              className="d-inline-block align-top"
-              alt="logo"
-            />
-          </Link>
-        </Navbar.Brand>
-        <Form inline>
-          <FormControl
-            type="text"
-            placeholder="Search"
-            className="mr-sm-2"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+  return authUser ? (
+    <Navbar bg="light" variant="light" className="navbar">
+      <Navbar.Brand>
+        <Link to="/">
+          <img
+            src="/images/instagram_logo.png"
+            className="d-inline-block align-top"
+            alt="logo"
           />
-        </Form>
-        <Nav>
-          <Nav.Link
-            href="/"
-            className="navbar__icon"
-            onClick={(e) => {
-              e.preventDefault();
-              history.push("/");
-            }}
+        </Link>
+      </Navbar.Brand>
+      <Form inline>
+        <FormControl
+          type="text"
+          placeholder="Search"
+          className="mr-sm-2"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </Form>
+      <Nav>
+        <Nav.Link
+          href="/"
+          className="navbar__icon"
+          onClick={(e) => {
+            e.preventDefault();
+            history.push("/");
+          }}
+        >
+          <AiFillHome />
+        </Nav.Link>
+        <Nav.Link
+          href="/messages"
+          className="navbar__icon"
+          onClick={(e) => {
+            e.preventDefault();
+            history.push("/messages");
+          }}
+        >
+          <BsCursor />
+        </Nav.Link>
+        <Nav.Link href="#features" className="navbar__icon">
+          <BsCompass />
+        </Nav.Link>
+        <Nav.Link href="#notifications" className="navbar__icon">
+          <OverlayTrigger
+            trigger="click"
+            rootClose
+            key="bottom"
+            placement="bottom"
+            overlay={
+              <Popover>
+                <Popover.Content>
+                  <ListGroup variant="flush">
+                    {authUser.notifications
+                      .sort((a, b) => b.timestamp - a.timestamp)
+                      .slice(0, 5)
+                      .map((notification) => {
+                        return (
+                          <NotificationsItem
+                            key={notification.timestamp}
+                            notification={notification}
+                          />
+                        );
+                      })}
+                  </ListGroup>
+                </Popover.Content>
+              </Popover>
+            }
           >
-            <AiFillHome />
-          </Nav.Link>
-          <Nav.Link
-            href="/messages"
-            className="navbar__icon"
-            onClick={(e) => {
-              e.preventDefault();
-              history.push("/messages");
-            }}
+            <BsHeart />
+          </OverlayTrigger>
+        </Nav.Link>
+        <Nav.Link href="#profile" className="navbar__icon">
+          <OverlayTrigger
+            trigger="click"
+            rootClose
+            key="bottom"
+            placement="bottom"
+            overlay={
+              <Popover className="navbar__profile-popover">
+                <Popover.Content>
+                  <Link to={`/profile/${authUser.uid}`}>
+                    <BsPeopleCircle className="navbar__profile-popover-icon" />
+                    Profile
+                  </Link>
+                  <Link to="/saved">
+                    <BsBookmark className="navbar__profile-popover-icon" />
+                    Saved
+                  </Link>
+                  <Link to={`/edit/${authUser.uid}`}>
+                    <BsGearWide className="navbar__profile-popover-icon" />
+                    Settings
+                  </Link>
+                  <p style={{ cursor: "pointer" }} onClick={logoutUser}>
+                    Logout
+                  </p>
+                </Popover.Content>
+              </Popover>
+            }
           >
-            <BsCursor />
-          </Nav.Link>
-          <Nav.Link href="#features" className="navbar__icon">
-            <BsCompass />
-          </Nav.Link>
-          <Nav.Link href="#notifications" className="navbar__icon">
-            <OverlayTrigger
-              trigger="click"
-              rootClose
-              key="bottom"
-              placement="bottom"
-              overlay={
-                <Popover>
-                  <Popover.Content>
-                    <ListGroup variant="flush">
-                      {authUser.notifications
-                        .sort((a, b) => b.timestamp - a.timestamp)
-                        .slice(0, 5)
-                        .map((notification) => {
-                          return (
-                            <NotificationsItem
-                              key={notification.timestamp}
-                              notification={notification}
-                            />
-                          );
-                        })}
-                    </ListGroup>
-                  </Popover.Content>
-                </Popover>
-              }
-            >
-              <BsHeart />
-            </OverlayTrigger>
-          </Nav.Link>
-          <Nav.Link href="#profile" className="navbar__icon">
-            <OverlayTrigger
-              trigger="click"
-              rootClose
-              key="bottom"
-              placement="bottom"
-              overlay={
-                <Popover className="navbar__profile-popover">
-                  <Popover.Content>
-                    <Link to={`/profile/${authUser.uid}`}>
-                      <BsPeopleCircle className="navbar__profile-popover-icon" />
-                      Profile
-                    </Link>
-                    <Link to="/saved">
-                      <BsBookmark className="navbar__profile-popover-icon" />
-                      Saved
-                    </Link>
-                    <Link to={`/edit/${authUser.uid}`}>
-                      <BsGearWide className="navbar__profile-popover-icon" />
-                      Settings
-                    </Link>
-                    <p style={{ cursor: "pointer" }} onClick={logoutUser}>
-                      Logout
-                    </p>
-                  </Popover.Content>
-                </Popover>
-              }
-            >
-              <img
-                src={authUser.profileImage}
-                alt="profile"
-                className="navbar__profile-image"
-              />
-            </OverlayTrigger>
-          </Nav.Link>
-        </Nav>
-      </Navbar>
-    )
-  );
+            <img
+              src={authUser.profileImage}
+              alt="profile"
+              className="navbar__profile-image"
+            />
+          </OverlayTrigger>
+        </Nav.Link>
+      </Nav>
+    </Navbar>
+  ) : null;
 };
 
 export default NavBar;
