@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Post from "../Post";
 import { projectFirestore } from "../../firebase/config";
 
-const Posts = ({ uid }) => {
+const Posts = () => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
@@ -19,7 +19,7 @@ const Posts = ({ uid }) => {
   return (
     <div className="posts-container">
       {posts.map((post) => {
-        return <Post key={post.id} post={post} uid={uid} />;
+        return <Post key={post.id} post={post} />;
       })}
     </div>
   );
