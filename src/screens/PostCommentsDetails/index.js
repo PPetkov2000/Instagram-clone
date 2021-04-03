@@ -4,11 +4,11 @@ import { Card } from "react-bootstrap";
 import PostNavbar from "../../components/PostNavbar";
 import Comments from "../../components/Comments";
 import AddComment from "../../components/AddComment";
-import { useGlobalContext } from "../../utils/context";
-import { projectFirestore } from "../../firebase/config";
-import requester from "../../firebase/requester";
-import formatTimestamp from "../../utils/formatTimestamp";
 import CommentLikesModal from "../../components/CommentLikesModal";
+import { projectFirestore } from "../../firebase/config";
+import { useGlobalContext } from "../../utils/context";
+import { followAndUnfollowUser } from "../../utils/userActions";
+import formatTimestamp from "../../utils/formatTimestamp";
 
 const PostCommentsDetails = (props) => {
   let postId;
@@ -21,8 +21,8 @@ const PostCommentsDetails = (props) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [showCommentLikesModal, setShowCommentLikesModal] = useState(false);
   const [postCreatorProfileImage, setPostCreatorProfileImage] = useState();
-  const context = useGlobalContext();
-  const uid = context && context.uid;
+  const authUser = useGlobalContext();
+  const authUserId = authUser && authUser.uid;
   const postCreator = post && post.creator;
 
   useEffect(() => {
@@ -39,17 +39,17 @@ const PostCommentsDetails = (props) => {
   }, [postId]);
 
   useEffect(() => {
-    if (uid == null) return;
+    if (authUserId == null) return;
 
     const unsub = projectFirestore
       .collection("instagramUsers")
-      .doc(uid)
+      .doc(authUserId)
       .onSnapshot((snapshot) => {
         setIsFollowing(snapshot.data().following.includes(postCreator));
       });
 
     return () => unsub();
-  }, [uid, postCreator]);
+  }, [authUserId, postCreator]);
 
   useEffect(() => {
     if (postCreator == null) return;
@@ -63,49 +63,6 @@ const PostCommentsDetails = (props) => {
 
     return () => unsub();
   }, [postCreator]);
-
-  const followAndUnfollowUser = () => {
-    Promise.all([
-      requester.get("instagramUsers", uid),
-      requester.get("instagramUsers", postCreator),
-    ]).then(([currentUser, postCreatorUser]) => {
-      let currentUserFollowing = currentUser.data().following;
-      let postCreatorUserFollowers = postCreatorUser.data().followers;
-      let postCreatorUserNotifications = postCreatorUser.data().notifications;
-
-      if (!currentUserFollowing.includes(postCreator)) {
-        currentUserFollowing.push(postCreator);
-        postCreatorUserFollowers.push(uid);
-        postCreatorUserNotifications.push({
-          id: currentUser.id,
-          username: currentUser.data().username,
-          profileImage: currentUser.data().profileImage,
-          timestamp: new Date(),
-          type: "follower",
-        });
-      } else {
-        currentUserFollowing = currentUserFollowing.filter(
-          (x) => x !== postCreator
-        );
-        postCreatorUserFollowers = postCreatorUserFollowers.filter(
-          (x) => x !== uid
-        );
-        postCreatorUserNotifications = postCreatorUserNotifications.filter(
-          (x) => x.id !== uid
-        );
-      }
-
-      return Promise.all([
-        requester.update("instagramUsers", uid, {
-          following: currentUserFollowing,
-        }),
-        requester.update("instagramUsers", postCreator, {
-          followers: postCreatorUserFollowers,
-          notifications: postCreatorUserNotifications,
-        }),
-      ]);
-    });
-  };
 
   const showCommentLikes = () => setShowCommentLikesModal(true);
   const hideCommentLikes = () => setShowCommentLikesModal(false);
@@ -124,14 +81,20 @@ const PostCommentsDetails = (props) => {
               />
             </Link>
             <strong>{post.username} • </strong>
-            {uid !== postCreator && (
+            {authUserId !== postCreator && (
               <>
                 {isFollowing ? (
-                  <Card.Link href="#unfollow" onClick={followAndUnfollowUser}>
+                  <Card.Link
+                    href="#unfollow"
+                    onClick={() => followAndUnfollowUser(authUser, postCreator)}
+                  >
                     Unfollow
                   </Card.Link>
                 ) : (
-                  <Card.Link href="#follow" onClick={followAndUnfollowUser}>
+                  <Card.Link
+                    href="#follow"
+                    onClick={() => followAndUnfollowUser(authUser, postCreator)}
+                  >
                     Follow
                   </Card.Link>
                 )}
