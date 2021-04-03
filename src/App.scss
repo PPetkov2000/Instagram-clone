@@ -6,10 +6,12 @@
   margin: 0 auto;
 
   @media #{$mq-760-down} {
+    display: block;
     width: 80%;
   }
 
   @media #{$mq-620-down} {
+    display: block;
     width: 90%;
   }
 }
@@ -191,6 +193,10 @@
 .modal-body,
 .messages-body {
   padding-top: 0;
+
+  .post-details {
+    width: 100%;
+  }
 }
 
 .messages-container {
@@ -719,80 +725,116 @@
   width: 100%;
 }
 
-.edit-profile-row {
-  width: 65%;
-  margin: 0 auto;
+.edit-profile {
+  &__row {
+    width: 65%;
+    margin: 0 auto;
+
+    @media #{$mq-1000-down} {
+      width: 80%;
+    }
+
+    @media #{$mq-760-down} {
+      width: 90%;
+    }
+  }
+
+  &__tab-pane-header {
+    display: flex;
+    align-items: center;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    height: 3rem;
+  }
+
+  &__image-wrapper {
+    flex: 0.3;
+    display: flex;
+    justify-content: center;
+    height: 100%;
+  }
+
+  &__image {
+    width: 3rem;
+    height: 100%;
+    border: 1px solid lightgray;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  &__tab-pane-text {
+    flex: 0.7;
+    font-size: 0.9rem;
+  }
+
+  &__tab-pane-title {
+    margin: 0;
+  }
+
+  &__form-group {
+    display: flex;
+    align-items: center;
+  }
+
+  &__form-group-label {
+    flex: 0.3;
+    height: 100%;
+    text-align: center;
+    margin: 0;
+  }
+
+  &__form-group-field {
+    flex: 0.7;
+
+    &:focus {
+      border: 2px solid black;
+    }
+  }
+
+  &__actions {
+    flex: 0.7;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1.5rem 0 1.5rem 28%;
+  }
 }
 
-.edit-profile-tab-pane-header,
-.change-password-tab-pane-header {
-  display: flex;
-  align-items: center;
-  margin-top: 2rem;
-  margin-bottom: 1rem;
-  height: 3rem;
-}
+.change-password {
+  &__tab-pane-header {
+    display: flex;
+    align-items: center;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    height: 3rem;
+  }
+  &__image-wrapper {
+    flex: 0.3;
+    display: flex;
+    justify-content: center;
+    height: 100%;
+  }
 
-.edit-profile-img-container,
-.change-password-img-container {
-  flex: 0.3;
-  display: flex;
-  justify-content: center;
-  height: 100%;
-}
+  &__image {
+    width: 3rem;
+    height: 100%;
+    border: 1px solid lightgray;
+    border-radius: 50%;
+    cursor: pointer;
+  }
 
-.edit-profile-img,
-.change-password-img {
-  width: 3rem;
-  height: 100%;
-  border: 1px solid lightgray;
-  border-radius: 50%;
-  cursor: pointer;
-}
+  &__tab-pane-text {
+    flex: 0.7;
+    font-size: 0.9rem;
+  }
 
-.edit-profile-tab-pane-text,
-.change-password-tab-pane-text {
-  flex: 0.7;
-  font-size: 0.9rem;
-}
-
-.edit-profile-tab-pane-title {
-  margin: 0;
-}
-
-.edit-profile-form-group {
-  display: flex;
-  align-items: center;
-}
-
-.edit-profile-form-group-label {
-  flex: 0.3;
-  height: 100%;
-  text-align: center;
-  margin: 0;
-}
-
-.edit-profile-form-group-field {
-  flex: 0.7;
-}
-
-.edit-profile-form-group-field:focus {
-  border: 2px solid black;
-}
-
-.edit-profile-buttons-container,
-.change-password-buttons-container {
-  display: flex;
-  margin-bottom: 2rem;
-}
-
-.edit-profile-buttons,
-.change-password-buttons {
-  flex: 0.7;
-  margin-left: -0.7rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  &__actions {
+    flex: 0.7;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1.5rem 0 1.5rem 28%;
+  }
 }
 
 @media only screen and (max-width: 768px) {
