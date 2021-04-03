@@ -7,62 +7,36 @@ const ProfileNavbar = ({
   openChannel,
   openSaved,
   openTagged,
-  setOpenPosts,
-  setOpenChannel,
-  setOpenSaved,
-  setOpenTagged,
-  userId,
+  openPostsHandler,
+  openChannelHandler,
+  openSavedHandler,
+  openTaggedHandler,
+  currentUserId,
 }) => {
-  const context = useGlobalContext();
-  const uid = context && context.uid;
-
-  const openProfilePosts = () => {
-    setOpenPosts(true);
-    setOpenChannel(false);
-    setOpenSaved(false);
-    setOpenTagged(false);
-  };
-  const openProfileChannel = () => {
-    setOpenPosts(false);
-    setOpenChannel(true);
-    setOpenSaved(false);
-    setOpenTagged(false);
-  };
-  const openProfileSaved = () => {
-    setOpenPosts(false);
-    setOpenChannel(false);
-    setOpenSaved(true);
-    setOpenTagged(false);
-  };
-  const openProfileTagged = () => {
-    setOpenPosts(false);
-    setOpenChannel(false);
-    setOpenSaved(false);
-    setOpenTagged(true);
-  };
+  const authUser = useGlobalContext();
 
   return (
     <nav className="user-profile-navbar">
       <a
         href="#posts"
         className={openPosts ? "profile-navbar-active" : ""}
-        onClick={openProfilePosts}
+        onClick={openPostsHandler}
       >
         <BsGrid3X3 className="user-profile-navbar-icon" /> posts
       </a>
-      {userId === uid && (
+      {authUser && authUser.uid === currentUserId && (
         <>
           <a
             href="#channel"
             className={openChannel ? "profile-navbar-active" : ""}
-            onClick={openProfileChannel}
+            onClick={openChannelHandler}
           >
             <BsTv className="user-profile-navbar-icon" /> igtv
           </a>
           <a
             href="#saved"
             className={openSaved ? "profile-navbar-active" : ""}
-            onClick={openProfileSaved}
+            onClick={openSavedHandler}
           >
             <BsBookmark className="user-profile-navbar-icon" /> saved
           </a>
@@ -71,7 +45,7 @@ const ProfileNavbar = ({
       <a
         href="#tagged"
         className={openTagged ? "profile-navbar-active" : ""}
-        onClick={openProfileTagged}
+        onClick={openTaggedHandler}
       >
         <BsPersonSquare className="user-profile-navbar-icon" /> tagged
       </a>
