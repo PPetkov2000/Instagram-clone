@@ -4,24 +4,22 @@ import Posts from "../../components/Posts";
 import UploadForm from "../../components/UploadForm";
 import Aside from "../../components/Aside";
 import { useGlobalContext } from "../../utils/context";
-import { useHistory } from "react-router-dom";
 
-const Home = () => {
-  const context = useGlobalContext();
-  const history = useHistory();
+const Home = ({ history }) => {
+  const authUser = useGlobalContext();
 
   useEffect(() => {
-    if (!context || !context.uid) {
+    if (!authUser || !authUser.uid) {
       history.push("/login");
     }
-  }, [context, history]);
+  }, [authUser, history]);
 
   return (
     <div className="home">
       <div className="home__content">
         <UploadForm />
         <Stories />
-        {context && <Posts uid={context.uid} />}
+        <Posts />
       </div>
       <Aside />
     </div>
