@@ -12,93 +12,39 @@ import { FcLike } from "react-icons/fc";
 import { projectFirestore } from "../../firebase/config";
 import { useGlobalContext } from "../../utils/context";
 import PostNavbarModal from "../PostNavbarModal";
-import requester from "../../firebase/requester";
+import { likeAndDislikePost, saveAndUnSavePost } from "../../utils/userActions";
 
 const PostNavbar = ({ post }) => {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const history = useHistory();
-  const context = useGlobalContext();
-  const uid = context && context.uid;
+  const authUser = useGlobalContext();
+  const authUserId = authUser && authUser.uid;
 
   useEffect(() => {
     const unsub = projectFirestore
       .collection("posts")
       .doc(post.id)
       .onSnapshot((snapshot) => {
-        setLiked(snapshot.data().likes.includes(uid));
+        setLiked(snapshot.data().likes.includes(authUserId));
       });
 
     return () => unsub();
-  }, [post.id, uid]);
+  }, [post.id, authUserId]);
 
   useEffect(() => {
-    if (uid == null) return;
+    if (authUserId == null) return;
 
     const unsub = projectFirestore
       .collection("instagramUsers")
-      .doc(uid)
+      .doc(authUserId)
       .onSnapshot((snapshot) => {
         setSaved(snapshot.data().saved.includes(post.id));
       });
 
     return () => unsub();
-  }, [uid, post.id]);
-
-  const likeAndDislikePost = () => {
-    Promise.all([
-      requester.get("posts", post.id),
-      requester.get("instagramUsers", post.creator),
-    ])
-      .then(([currentPost, currentUser]) => {
-        let currentPostLikes = currentPost.data().likes;
-        let currentUserNotifications = currentUser.data().notifications;
-
-        if (!currentPostLikes.includes(uid)) {
-          currentPostLikes.push(uid);
-          currentUserNotifications.push({
-            id: uid,
-            username: context.username,
-            profileImage: context.profileImage,
-            timestamp: new Date(),
-            type: "like",
-            postId: post.id,
-            postImageUrl: post.imageUrl,
-          });
-        } else {
-          currentPostLikes = currentPostLikes.filter((x) => x !== uid);
-          currentUserNotifications = currentUserNotifications.filter(
-            (x) => x.id !== uid
-          );
-        }
-
-        return Promise.all([
-          requester.update("posts", post.id, { likes: currentPostLikes }),
-          requester.update("instagramUsers", post.creator, {
-            notifications: currentUserNotifications,
-          }),
-        ]);
-      })
-      .catch(console.error);
-  };
-
-  const saveAndUnSavePost = () => {
-    requester
-      .get("instagramUsers", uid)
-      .then((res) => {
-        let saved = res.data().saved;
-
-        if (!saved.includes(post.id)) {
-          saved.push(post.id);
-        } else {
-          saved = saved.filter((x) => x !== post.id);
-        }
-
-        return requester.update("instagramUsers", uid, { saved });
-      })
-      .catch(console.error);
-  };
+  }, [authUserId, post.id]);
 
   const showOptions = () => setShowModal(true);
   const hideOptions = () => setShowModal(false);
@@ -114,7 +60,7 @@ const PostNavbar = ({ post }) => {
           <Nav.Link
             href="#like"
             className="nav-icon"
-            onClick={likeAndDislikePost}
+            onClick={() => likeAndDislikePost(authUser, post)}
           >
             {liked ? <FcLike /> : <BsHeart />}
           </Nav.Link>
@@ -128,7 +74,7 @@ const PostNavbar = ({ post }) => {
           <Nav.Link
             href="#bookmark"
             className="nav-icon posts-navbar__nav"
-            onClick={saveAndUnSavePost}
+            onClick={() => saveAndUnSavePost(authUser, post.id)}
           >
             {saved ? <BsFillBookmarkFill /> : <BsBookmark />}
           </Nav.Link>
