@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { Modal, ListGroup } from "react-bootstrap";
 import { projectFirestore } from "../../firebase/config";
-import requester from "../../firebase/requester";
 import { useGlobalContext } from "../../utils/context";
+import { followAndUnfollowUser } from "../../utils/userActions";
 
 const PostModal = ({ showModal, hideOptions, postId, postCreator }) => {
   const [isCurrentUserFollowing, setIsCurrentUserFollowing] = useState(false);
@@ -20,53 +20,6 @@ const PostModal = ({ showModal, hideOptions, postId, postCreator }) => {
         );
       });
   }, [authUser, postCreator]);
-
-  const followAndUnfollowUser = () => {
-    Promise.all([
-      requester.get("instagramUsers", authUser.uid),
-      requester.get("instagramUsers", postCreator),
-    ])
-      .then(([currentUser, postCreatorUser]) => {
-        let currentUserFollowing = currentUser.data().following;
-        let postCreatorUserFollowers = postCreatorUser.data().followers;
-        let postCreatorUserNotifications = postCreatorUser.data().notifications;
-
-        if (!currentUserFollowing.includes(postCreator)) {
-          currentUserFollowing.push(postCreator);
-          postCreatorUserFollowers.push(authUser.uid);
-          postCreatorUserNotifications.push({
-            id: currentUser.id,
-            username: currentUser.data().username,
-            profileImage: currentUser.data().profileImage,
-            timestamp: new Date(),
-            type: "follower",
-          });
-        } else {
-          currentUserFollowing = currentUserFollowing.filter(
-            (x) => x !== postCreator
-          );
-          postCreatorUserFollowers = postCreatorUserFollowers.filter(
-            (x) => x !== authUser.uid
-          );
-          postCreatorUserNotifications = postCreatorUserNotifications.filter(
-            (x) => x.id !== authUser.uid
-          );
-        }
-
-        return Promise.all([
-          requester.update("instagramUsers", authUser.uid, {
-            following: currentUserFollowing,
-          }),
-          requester.update("instagramUsers", postCreator, {
-            followers: postCreatorUserFollowers,
-            notifications: postCreatorUserNotifications,
-          }),
-        ]);
-      })
-      .catch(console.error);
-
-    hideOptions();
-  };
 
   const openPost = () => {
     history.push(`/post-comments-details/${postId}`);
@@ -85,7 +38,10 @@ const PostModal = ({ showModal, hideOptions, postId, postCreator }) => {
                 <ListGroup.Item
                   action
                   className="text-danger"
-                  onClick={followAndUnfollowUser}
+                  onClick={() => {
+                    followAndUnfollowUser(authUser, postCreator);
+                    hideOptions();
+                  }}
                 >
                   Cancel subscription
                 </ListGroup.Item>
@@ -93,7 +49,10 @@ const PostModal = ({ showModal, hideOptions, postId, postCreator }) => {
                 <ListGroup.Item
                   action
                   className="text-success"
-                  onClick={followAndUnfollowUser}
+                  onClick={() => {
+                    followAndUnfollowUser(authUser, postCreator);
+                    hideOptions();
+                  }}
                 >
                   Subscribe
                 </ListGroup.Item>
