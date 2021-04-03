@@ -13,7 +13,7 @@ function ProfileEdit() {
   const [profileEmail, setProfileEmail] = useState("");
   const [profilePhoneNumber, setProfilePhoneNumber] = useState("");
   const [profileGender, setProfileGender] = useState("");
-  const context = useGlobalContext();
+  const authUser = useGlobalContext();
 
   const showProfileImageOptions = () => setShowProfileImage(true);
   const hideProfileImageOptions = () => setShowProfileImage(false);
@@ -28,13 +28,13 @@ function ProfileEdit() {
     console.log(`Gender: ${profileGender}`);
 
     requester
-      .update("instagramUsers", context && context.uid, {
+      .update("instagramUsers", authUser && authUser.uid, {
         fullName: profileName,
         username: profileUsername,
         email: profileEmail,
       })
       .then(() => {
-        context.fullName = profileName;
+        authUser.fullName = profileName;
       })
       .catch(console.error);
   };
@@ -44,7 +44,7 @@ function ProfileEdit() {
       <div className="edit-profile__tab-pane-header">
         <div className="edit-profile__image-wrapper">
           <img
-            src={context && context.profileImage}
+            src={authUser && authUser.profileImage}
             alt="profile"
             className="edit-profile__image"
             onClick={showProfileImageOptions}
@@ -52,7 +52,7 @@ function ProfileEdit() {
         </div>
         <div className="edit-profile__tab-pane-text">
           <h4 className="edit-profile__tab-pane-title">
-            {context && context.username}
+            {authUser && authUser.username}
           </h4>
           <a
             href="#profile-photo"
@@ -67,13 +67,13 @@ function ProfileEdit() {
         <ProfileSettingsFormGroup
           labelText="Name"
           fieldType="text"
-          fieldValue={context && context.fullName}
+          fieldValue={authUser && authUser.fullName}
           handleChange={(e) => setProfileName(e.target.value)}
         />
         <ProfileSettingsFormGroup
           labelText="Username"
           fieldType="text"
-          fieldValue={context && context.username}
+          fieldValue={authUser && authUser.username}
           handleChange={(e) => setProfileUsername(e.target.value)}
         />
         <ProfileSettingsFormGroup
@@ -84,7 +84,7 @@ function ProfileEdit() {
         <ProfileSettingsFormGroup
           labelText="Email"
           fieldType="email"
-          fieldValue={context && context.email}
+          fieldValue={authUser && authUser.email}
           handleChange={(e) => setProfileEmail(e.target.value)}
         />
         <ProfileSettingsFormGroup
@@ -110,7 +110,7 @@ function ProfileEdit() {
       <ProfileHeaderImageModal
         showProfileImage={showProfileImage}
         hideProfileImageOptions={hideProfileImageOptions}
-        userId={context && context.uid}
+        userId={authUser && authUser.uid}
       />
     </>
   );
