@@ -9,7 +9,7 @@ import { projectFirestore } from "../../firebase/config";
 import CommentLikesModal from "../CommentLikesModal";
 import { useGlobalContext } from "../../utils/context";
 
-export default function Post({ post, uid }) {
+const Post = ({ post }) => {
   const [showOptionsModal, setShowOptionsModal] = useState(false);
   const [showCommentLikesModal, setShowCommentLikesModal] = useState(false);
   const [postCreatorProfileImage, setPostCreatorProfileImage] = useState();
@@ -81,4 +81,6 @@ export default function Post({ post, uid }) {
       />
     </>
   );
-}
+};
+
+export default Post;
