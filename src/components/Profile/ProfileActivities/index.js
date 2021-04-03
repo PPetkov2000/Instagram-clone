@@ -10,55 +10,34 @@ const ProfileActivities = ({
   openChannel,
   openSaved,
   openTagged,
-  userId,
+  currentUser,
+  currentUserPosts,
 }) => {
   const [posts, setPosts] = useState([]);
-  const [saved, setSaved] = useState([]);
   const [savedPosts, setSavedPosts] = useState([]);
+  const [taggedPosts, setTaggedPosts] = useState([]);
 
   useEffect(() => {
-    const unsub = projectFirestore
-      .collection("posts")
-      .where("creator", "==", userId)
-      .onSnapshot((snapshot) => {
-        snapshot.docs.forEach((doc) => {
-          projectFirestore
-            .collection(`posts/${doc.id}/comments`)
-            .onSnapshot((snap) => {
-              const comments = snap.docs.map((doc) => doc.data());
-
-              setPosts(
-                snapshot.docs.map((doc) => ({
-                  id: doc.id,
-                  ...doc.data(),
-                  comments: comments.filter(
-                    (comment) => comment.postId === doc.id
-                  ),
-                }))
-              );
-            });
+    currentUserPosts.forEach((post) => {
+      projectFirestore
+        .collection(`posts/${post.id}/comments`)
+        .onSnapshot((snapshot) => {
+          const comments = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setPosts((prevPosts) => {
+            return [...prevPosts, { ...post, comments }];
+          });
         });
-      });
-
-    return () => unsub();
-  }, [userId]);
+    });
+  }, [currentUserPosts]);
 
   useEffect(() => {
-    const unsub = projectFirestore
-      .collection("instagramUsers")
-      .doc(userId)
-      .onSnapshot((snapshot) => {
-        if (snapshot.data()) {
-          setSaved(snapshot.data().saved);
-        }
-      });
+    if (!currentUser.saved) return;
 
-    return () => unsub();
-  }, [userId]);
-
-  useEffect(() => {
     setSavedPosts(
-      saved.reduce((result, postId) => {
+      currentUser.saved.reduce((result, postId) => {
         Promise.all([
           projectFirestore.collection("posts").doc(postId).get(),
           projectFirestore
@@ -67,7 +46,7 @@ const ProfileActivities = ({
             .collection("comments")
             .get(),
         ]).then(([postInfo, commentsInfo]) => {
-          const post = { postId: postInfo.id, ...postInfo.data() };
+          const post = { id: postInfo.id, ...postInfo.data() };
           const comments = commentsInfo.docs.map((doc) => ({
             commentId: doc.id,
             ...doc.data(),
@@ -81,14 +60,14 @@ const ProfileActivities = ({
         return result;
       }, [])
     );
-  }, [saved]);
+  }, [currentUser]);
 
   return (
     <div className="user-profile-activities">
       {openPosts && <ProfilePosts posts={posts} />}
       {openChannel && <ProfileChannel />}
       {openSaved && <ProfileSaved savedPosts={savedPosts} />}
-      {openTagged && <ProfileTagged userId={userId} />}
+      {openTagged && <ProfileTagged taggedPosts={taggedPosts} />}
     </div>
   );
 };
