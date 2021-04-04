@@ -20,7 +20,7 @@ import {
 import { Link, useHistory } from "react-router-dom";
 import NotificationsItem from "../NotificationsItem";
 import { projectAuth } from "../../firebase/config";
-import { useGlobalContext } from "../../utils/context";
+import { useAuth } from "../../utils/authProvider";
 import requester from "../../firebase/requester";
 
 const NavBar = () => {
@@ -28,7 +28,7 @@ const NavBar = () => {
   const [searchedResults, setSearchedResults] = useState("");
   const [availableContacts, setAvailableContacts] = useState([]);
   const history = useHistory();
-  const authUser = useGlobalContext();
+  const authUser = useAuth();
 
   useEffect(() => {
     requester
