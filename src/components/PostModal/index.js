@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { Modal, ListGroup } from "react-bootstrap";
 import { projectFirestore } from "../../firebase/config";
-import { useGlobalContext } from "../../utils/context";
+import { useAuth } from "../../utils/authProvider";
 import { followAndUnfollowUser } from "../../utils/userActions";
 
 const PostModal = ({ showModal, hideOptions, postId, postCreator }) => {
   const [isCurrentUserFollowing, setIsCurrentUserFollowing] = useState(false);
   const history = useHistory();
-  const authUser = useGlobalContext();
+  const authUser = useAuth();
 
   useEffect(() => {
     projectFirestore
