@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { BsHeart } from "react-icons/bs";
 import { FcLike } from "react-icons/fc";
 import { projectFirestore } from "../../firebase/config";
-import { useGlobalContext } from "../../utils/context";
+import { useAuth } from "../../utils/authProvider";
 import requester from "../../firebase/requester";
 import formatTimestamp from "../../utils/formatTimestamp";
 import CommentLikesModal from "../CommentLikesModal";
@@ -12,8 +12,8 @@ const Comment = ({ comment, post }) => {
   const [liked, setLiked] = useState(false);
   const [showLikesModal, setShowLikesModal] = useState(false);
   const history = useHistory();
-  const context = useGlobalContext();
-  const uid = context && context.uid;
+  const authUser = useAuth();
+  const authUserId = authUser && authUser.uid;
 
   useEffect(() => {
     const unsub = projectFirestore
@@ -22,11 +22,11 @@ const Comment = ({ comment, post }) => {
       .collection("comments")
       .doc(comment.id)
       .onSnapshot((snapshot) => {
-        setLiked(snapshot.data().likes.includes(uid));
+        setLiked(snapshot.data().likes.includes(authUserId));
       });
 
     return () => unsub();
-  }, [comment.postId, comment.id, uid]);
+  }, [comment.postId, comment.id, authUserId]);
 
   const goToUserProfile = () => {
     history.push(`/profile/${comment.creatorId}`);
@@ -49,21 +49,23 @@ const Comment = ({ comment, post }) => {
         let currentCommentLikes = currentComment.data().likes;
         let commentCreatorNotifications = commentCreator.data().notifications;
 
-        if (!currentCommentLikes.includes(uid)) {
-          currentCommentLikes.push(uid);
+        if (!currentCommentLikes.includes(authUserId)) {
+          currentCommentLikes.push(authUserId);
           commentCreatorNotifications.push({
-            id: uid,
-            username: context && context.username,
-            profileImage: context && context.profileImage,
+            id: authUserId,
+            username: authUser && authUser.username,
+            profileImage: authUser && authUser.profileImage,
             timestamp: new Date(),
             type: "like-comment",
             postId: comment.postId,
             postImageUrl: post.imageUrl,
           });
         } else {
-          currentCommentLikes = currentCommentLikes.filter((x) => x !== uid);
+          currentCommentLikes = currentCommentLikes.filter(
+            (x) => x !== authUserId
+          );
           commentCreatorNotifications = commentCreatorNotifications.filter(
-            (x) => x.id !== uid
+            (x) => x.id !== authUserId
           );
         }
 
