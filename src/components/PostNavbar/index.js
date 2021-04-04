@@ -10,7 +10,7 @@ import {
 } from "react-icons/bs";
 import { FcLike } from "react-icons/fc";
 import { projectFirestore } from "../../firebase/config";
-import { useGlobalContext } from "../../utils/context";
+import { useAuth } from "../../utils/authProvider";
 import PostNavbarModal from "../PostNavbarModal";
 import { likeAndDislikePost, saveAndUnSavePost } from "../../utils/userActions";
 
@@ -19,7 +19,7 @@ const PostNavbar = ({ post }) => {
   const [saved, setSaved] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const history = useHistory();
-  const authUser = useGlobalContext();
+  const authUser = useAuth();
   const authUserId = authUser && authUser.uid;
 
   useEffect(() => {
