@@ -2,9 +2,9 @@ import React, { useState, useEffect, useContext } from "react";
 import { projectAuth } from "../firebase/config";
 import { generateUserDocument } from "../firebase/user";
 
-const GlobalStateContext = React.createContext(null);
+const AuthContext = React.createContext(null);
 
-const Context = ({ children }) => {
+const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -16,14 +16,11 @@ const Context = ({ children }) => {
     return () => unsub();
   }, []);
 
-  return (
-    <GlobalStateContext.Provider value={user}>
-      {children}
-    </GlobalStateContext.Provider>
-  );
+  return <AuthContext.Provider value={user}>{children}</AuthContext.Provider>;
 };
 
-export function useGlobalContext() {
-  return useContext(GlobalStateContext);
+export function useAuth() {
+  return useContext(AuthContext);
 }
-export default Context;
+
+export default AuthProvider;
