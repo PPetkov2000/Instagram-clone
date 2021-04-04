@@ -7,13 +7,13 @@ import PostNavbar from "../PostNavbar";
 import PostModal from "../PostModal";
 import { projectFirestore } from "../../firebase/config";
 import CommentLikesModal from "../CommentLikesModal";
-import { useGlobalContext } from "../../utils/context";
+import { useAuth } from "../../utils/authProvider";
 
 const Post = ({ post }) => {
   const [showOptionsModal, setShowOptionsModal] = useState(false);
   const [showCommentLikesModal, setShowCommentLikesModal] = useState(false);
   const [postCreatorProfileImage, setPostCreatorProfileImage] = useState();
-  const authUser = useGlobalContext();
+  const authUser = useAuth();
 
   const showOptions = () => setShowOptionsModal(true);
   const hideOptions = () => setShowOptionsModal(false);
