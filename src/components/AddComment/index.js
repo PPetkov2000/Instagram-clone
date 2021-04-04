@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { InputGroup, FormControl, Button } from "react-bootstrap";
 import { projectFirestore, timestamp } from "../../firebase/config";
-import { useGlobalContext } from "../../utils/context";
+import { useAuth } from "../../utils/authProvider";
 import requester from "../../firebase/requester";
 
 const AddComment = ({ post }) => {
   const [comment, setComment] = useState("");
-  const context = useGlobalContext();
-  const uid = context && context.uid;
+  const authUser = useAuth();
+  const authUserId = authUser && authUser.uid;
 
   const publishComment = () => {
     projectFirestore
@@ -16,14 +16,14 @@ const AddComment = ({ post }) => {
       .collection("comments")
       .add({
         text: comment,
-        creatorId: uid,
-        creatorUsername: context && context.username,
+        creatorId: authUserId,
+        creatorUsername: authUser && authUser.username,
         postId: post.id,
         timestamp: timestamp(),
         likes: [],
       })
       .then(() => {
-        if (uid === post.creator) return;
+        if (authUserId === post.creator) return;
 
         requester
           .get("instagramUsers", post.creator)
@@ -31,9 +31,9 @@ const AddComment = ({ post }) => {
             const notifications = res.data().notifications;
 
             notifications.push({
-              id: uid,
-              username: context && context.username,
-              profileImage: context && context.profileImage,
+              id: authUserId,
+              username: authUser && authUser.username,
+              profileImage: authUser && authUser.profileImage,
               timestamp: new Date(),
               type: "comment",
               postId: post.id,
@@ -66,7 +66,6 @@ const AddComment = ({ post }) => {
         <InputGroup.Append>
           <Button
             variant="success"
-            href="#publish"
             onClick={publishComment}
             disabled={!comment}
           >
