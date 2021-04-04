@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { Modal } from "react-bootstrap";
-import { useGlobalContext } from "../../utils/context";
+import { useAuth } from "../../utils/authProvider";
 import { projectFirestore } from "../../firebase/config";
 import requester from "../../firebase/requester";
 import ProfileHeaderUserStatusModal from "../Profile/ProfileHeaderUserStatusModal";
+import { followUser } from "../../utils/userActions";
 
 function CommentLikesModal({ showModal, hideModal, likes }) {
   const [likedCommentUsers, setLikedCommentUsers] = useState([]);
   const [showUserStatusModal, setShowUserStatusModal] = useState(false);
   const [clickedUserId, setClickedUserId] = useState();
   const [clickedUser, setClickedUser] = useState();
-  const history = useHistory();
-  const authUser = useGlobalContext();
   const [authUserFollowing, setAuthUserFollowing] = useState([]);
+  const history = useHistory();
+  const authUser = useAuth();
 
   useEffect(() => {
     projectFirestore
@@ -52,39 +53,6 @@ function CommentLikesModal({ showModal, hideModal, likes }) {
     history.push(`/profile/${clickedUserId}`);
   };
 
-  const followUser = () => {
-    Promise.all([
-      requester.get("instagramUsers", authUser.uid),
-      requester.get("instagramUsers", clickedUserId),
-    ])
-      .then(([currentUser, followedUser]) => {
-        const currentUserFollowing = currentUser.data().following;
-        const followedUserFollowers = followedUser.data().followers;
-        const followedUserNotifications = followedUser.data().notifications;
-
-        currentUserFollowing.push(clickedUserId);
-        followedUserFollowers.push(authUser.uid);
-        followedUserNotifications.push({
-          id: currentUser.id,
-          username: currentUser.data().username,
-          profileImage: currentUser.data().profileImage,
-          timestamp: new Date(),
-          type: "follower",
-        });
-
-        return Promise.all([
-          requester.update("instagramUsers", authUser.uid, {
-            following: currentUserFollowing,
-          }),
-          requester.update("instagramUsers", clickedUserId, {
-            followers: followedUserFollowers,
-            notifications: followedUserNotifications,
-          }),
-        ]);
-      })
-      .catch(console.error);
-  };
-
   return (
     <>
       <Modal show={showModal} onHide={hideModal} centered>
@@ -120,7 +88,7 @@ function CommentLikesModal({ showModal, hideModal, likes }) {
                     ) : (
                       <button
                         className="comment-likes-follow-button"
-                        onClick={followUser}
+                        onClick={() => followUser(authUser, user.id)}
                       >
                         Follow
                       </button>
