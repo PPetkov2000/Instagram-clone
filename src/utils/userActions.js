@@ -88,4 +88,70 @@ const saveAndUnSavePost = (authUser, savedPostId) => {
   });
 };
 
-export { followAndUnfollowUser, likeAndDislikePost, saveAndUnSavePost };
+const followUser = (authUser, followedUserId) => {
+  requester
+    .get("instagramUsers", followedUserId)
+    .then((followedUser) => {
+      const followedUserFollowers = followedUser.data().followers;
+      const followedUserNotifications = followedUser.data().notifications;
+
+      authUser.following.push(followedUserId);
+      followedUserFollowers.push(authUser.uid);
+      followedUserNotifications.push({
+        id: authUser.uid,
+        username: authUser.username,
+        profileImage: authUser.profileImage,
+        timestamp: new Date(),
+        type: "follower",
+      });
+
+      return Promise.all([
+        requester.update("instagramUsers", authUser.uid, {
+          following: authUser.following,
+        }),
+        requester.update("instagramUsers", followedUserId, {
+          followers: followedUserFollowers,
+          notifications: followedUserNotifications,
+        }),
+      ]);
+    })
+    .catch(console.error);
+};
+
+const unfollowUser = (authUser, unfollowedUserId) => {
+  requester
+    .get("instagramUsers", unfollowedUserId)
+    .then((unfollowedUser) => {
+      let unfollowedUserFollowers = unfollowedUser.data().followers;
+      let unfollowedUserNotifications = unfollowedUser.data().notifications;
+
+      authUser.following = authUser.following.filter(
+        (x) => x !== unfollowedUserId
+      );
+      unfollowedUserFollowers = authUser.following.filter(
+        (x) => x !== authUser.uid
+      );
+      unfollowedUserNotifications = unfollowedUserNotifications.filter(
+        (x) => x.id !== authUser.uid
+      );
+
+      return Promise.all([
+        requester.update("instagramUsers", authUser.uid, {
+          following: authUser.following,
+        }),
+        requester.update("instagramUsers", unfollowedUserId, {
+          followers: unfollowedUserFollowers,
+          notifications: unfollowedUserNotifications,
+        }),
+      ]);
+    })
+    .catch(console.error);
+};
+
+export {
+  followAndUnfollowUser,
+  likeAndDislikePost,
+  saveAndUnSavePost,
+  followUser,
+  unfollowUser,
+};
