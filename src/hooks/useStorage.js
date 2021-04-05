@@ -4,14 +4,14 @@ import {
   projectFirestore,
   timestamp,
 } from "../firebase/config";
-import { useGlobalContext } from "../utils/context";
+import { useAuth } from "../utils/authProvider";
 
 const useStorage = (file) => {
-  const context = useGlobalContext();
+  const { authUser } = useAuth();
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
   const [url, setUrl] = useState(null);
-  const { username, uid } = context;
+  const { username, uid } = authUser;
 
   useEffect(() => {
     const storageRef = projectStorage.ref(file.name);
