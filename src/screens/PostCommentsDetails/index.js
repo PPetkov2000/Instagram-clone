@@ -6,8 +6,8 @@ import Comments from "../../components/Comments";
 import AddComment from "../../components/AddComment";
 import CommentLikesModal from "../../components/CommentLikesModal";
 import { projectFirestore } from "../../firebase/config";
-import { useGlobalContext } from "../../utils/context";
-import { followAndUnfollowUser } from "../../utils/userActions";
+import { useAuth } from "../../utils/authProvider";
+import { followUser, unfollowUser } from "../../utils/userActions";
 import formatTimestamp from "../../utils/formatTimestamp";
 
 const PostCommentsDetails = (props) => {
@@ -21,7 +21,7 @@ const PostCommentsDetails = (props) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [showCommentLikesModal, setShowCommentLikesModal] = useState(false);
   const [postCreatorProfileImage, setPostCreatorProfileImage] = useState();
-  const authUser = useGlobalContext();
+  const { authUser } = useAuth();
   const authUserId = authUser && authUser.uid;
   const postCreator = post && post.creator;
 
@@ -86,14 +86,14 @@ const PostCommentsDetails = (props) => {
                 {isFollowing ? (
                   <Card.Link
                     href="#unfollow"
-                    onClick={() => followAndUnfollowUser(authUser, postCreator)}
+                    onClick={() => unfollowUser(authUser, postCreator)}
                   >
                     Unfollow
                   </Card.Link>
                 ) : (
                   <Card.Link
                     href="#follow"
-                    onClick={() => followAndUnfollowUser(authUser, postCreator)}
+                    onClick={() => followUser(authUser, postCreator)}
                   >
                     Follow
                   </Card.Link>
