@@ -1,47 +1,5 @@
 import requester from "../firebase/requester";
 
-const followAndUnfollowUser = (authUser, followedUserId) => {
-  requester
-    .get("instagramUsers", followedUserId)
-    .then((followedUser) => {
-      let followedUserFollowers = followedUser.data().followers;
-      let followedUserNotifications = followedUser.data().notifications;
-
-      if (!authUser.following.includes(followedUserId)) {
-        authUser.following.push(followedUserId);
-        followedUserFollowers.push(authUser.uid);
-        followedUserNotifications.push({
-          id: authUser.uid,
-          username: authUser.username,
-          profileImage: authUser.profileImage,
-          timestamp: new Date(),
-          type: "follower",
-        });
-      } else {
-        authUser.following = authUser.following.filter(
-          (x) => x !== followedUserId
-        );
-        followedUserFollowers = followedUserFollowers.filter(
-          (x) => x !== authUser.uid
-        );
-        followedUserNotifications = followedUserNotifications.filter(
-          (x) => x.id !== authUser.uid
-        );
-      }
-
-      return Promise.all([
-        requester.update("instagramUsers", authUser.uid, {
-          following: authUser.following,
-        }),
-        requester.update("instagramUsers", followedUserId, {
-          followers: followedUserFollowers,
-          notifications: followedUserNotifications,
-        }),
-      ]);
-    })
-    .catch(console.error);
-};
-
 const likeAndDislikePost = (authUser, likedPost) => {
   requester
     .get("instagramUsers", likedPost.creator)
@@ -148,10 +106,63 @@ const unfollowUser = (authUser, unfollowedUserId) => {
     .catch(console.error);
 };
 
+const likeComment = (authUser, comment, postImageUrl) => {
+  requester
+    .get("instagramUsers", comment.creatorId)
+    .then((commentCreator) => {
+      const commentCreatorNotifications = commentCreator.data().notifications;
+
+      comment.likes.push(authUser.uid);
+      commentCreatorNotifications.push({
+        id: authUser.uid,
+        username: authUser.username,
+        profileImage: authUser.profileImage,
+        timestamp: new Date(),
+        type: "like-comment",
+        postId: comment.postId,
+        postImageUrl: postImageUrl,
+      });
+
+      return Promise.all([
+        requester.update(`posts/${comment.postId}/comments`, comment.id, {
+          likes: comment.likes,
+        }),
+        requester.update("instagramUsers", comment.creatorId, {
+          notifications: commentCreatorNotifications,
+        }),
+      ]);
+    })
+    .catch(console.error);
+};
+
+const dislikeComment = (authUser, comment) => {
+  requester
+    .get("instagramUsers", comment.creatorId)
+    .then((commentCreator) => {
+      let commentCreatorNotifications = commentCreator.data().notifications;
+
+      comment.likes = comment.likes.filter((x) => x !== authUser.uid);
+      commentCreatorNotifications = commentCreatorNotifications.filter(
+        (x) => x.id !== authUser.uid
+      );
+
+      return Promise.all([
+        requester.update(`posts/${comment.postId}/comments`, comment.id, {
+          likes: comment.likes,
+        }),
+        requester.update("instagramUsers", comment.creatorId, {
+          notifications: commentCreatorNotifications,
+        }),
+      ]);
+    })
+    .catch(console.error);
+};
+
 export {
-  followAndUnfollowUser,
   likeAndDislikePost,
   saveAndUnSavePost,
   followUser,
   unfollowUser,
+  likeComment,
+  dislikeComment,
 };
