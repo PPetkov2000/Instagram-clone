@@ -3,10 +3,11 @@ import Stories from "../../components/Stories";
 import Posts from "../../components/Posts";
 import UploadForm from "../../components/UploadForm";
 import Aside from "../../components/Aside";
-import { useGlobalContext } from "../../utils/context";
+import Loader from "../../components/Loader";
+import { useAuth } from "../../utils/authProvider";
 
 const Home = ({ history }) => {
-  const authUser = useGlobalContext();
+  const { loading, authUser } = useAuth();
 
   useEffect(() => {
     if (!authUser || !authUser.uid) {
@@ -14,7 +15,9 @@ const Home = ({ history }) => {
     }
   }, [authUser, history]);
 
-  return (
+  return loading ? (
+    <Loader />
+  ) : (
     <div className="home">
       <div className="home__content">
         <UploadForm />
