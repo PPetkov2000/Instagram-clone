@@ -1,19 +1,19 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.scss";
+import AuthProvider from "./utils/authProvider";
+import Navbar from "./components/Navbar";
 import Home from "./screens/Home";
 import PostCommentsDetails from "./screens/PostCommentsDetails";
-import Navbar from "./components/Navbar";
 import Messages from "./screens/Messages";
 import Profile from "./screens/Profile";
 import Register from "./screens/Register";
 import Login from "./screens/Login";
 import ProfileSettings from "./screens/ProfileSettings";
-import Context from "./utils/context";
 
 const App = () => {
   return (
-    <Context>
+    <AuthProvider>
       <Router>
         <Navbar />
         <Switch>
@@ -29,7 +29,7 @@ const App = () => {
           <Route path="/login" component={Login} />
         </Switch>
       </Router>
-    </Context>
+    </AuthProvider>
   );
 };
 
