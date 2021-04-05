@@ -3,7 +3,8 @@ import { Link, useHistory } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import { projectAuth } from "../../firebase/config";
 import { generateUserDocument } from "../../firebase/user";
-import { useGlobalContext } from "../../utils/context";
+import { useAuth } from "../../utils/authProvider";
+import Loader from "../../components/Loader";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -12,13 +13,13 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const history = useHistory();
-  const context = useGlobalContext();
+  const { loading, authUser } = useAuth();
 
   useEffect(() => {
-    if (context) {
+    if (authUser) {
       history.push("/");
     }
-  }, [history, context]);
+  }, [history, authUser]);
 
   const registerUser = async (e) => {
     e.preventDefault();
@@ -46,7 +47,9 @@ const Register = () => {
     }
   };
 
-  return (
+  return loading ? (
+    <Loader />
+  ) : (
     <div className="register-container">
       <section className="register-section">
         <h1>Instagram</h1>
