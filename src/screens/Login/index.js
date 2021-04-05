@@ -2,20 +2,21 @@ import React, { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import { projectAuth } from "../../firebase/config";
-import { useGlobalContext } from "../../utils/context";
+import { useAuth } from "../../utils/authProvider";
+import Loader from "../../components/Loader";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const history = useHistory();
-  const context = useGlobalContext();
+  const { loading, authUser } = useAuth();
 
   useEffect(() => {
-    if (context) {
+    if (authUser) {
       history.push("/");
     }
-  }, [history, context]);
+  }, [history, authUser]);
 
   const loginUser = async (e) => {
     e.preventDefault();
@@ -33,7 +34,9 @@ const Login = () => {
     }
   };
 
-  return (
+  return loading ? (
+    <Loader />
+  ) : (
     <div className="login-container">
       <section className="login-section">
         <h1 className="mb-4">Instagram</h1>
