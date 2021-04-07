@@ -11,6 +11,18 @@ const AuthProvider = ({ children }) => {
     isLoggedIn: false,
   });
 
+  const signup = (email, password) => {
+    return projectAuth.createUserWithEmailAndPassword(email, password);
+  };
+
+  const login = (email, password) => {
+    return projectAuth.signInWithEmailAndPassword(email, password);
+  };
+
+  const logout = () => {
+    return projectAuth.signOut();
+  };
+
   useEffect(() => {
     const unsub = projectAuth.onAuthStateChanged(async (userAuth) => {
       const userInfo = await generateUserDocument(userAuth);
@@ -25,7 +37,9 @@ const AuthProvider = ({ children }) => {
   }, [authState]);
 
   return (
-    <AuthContext.Provider value={authState}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ ...authState, signup, login, logout }}>
+      {children}
+    </AuthContext.Provider>
   );
 };
 
