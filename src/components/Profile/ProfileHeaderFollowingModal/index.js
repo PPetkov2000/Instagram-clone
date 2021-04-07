@@ -4,7 +4,7 @@ import { Modal } from "react-bootstrap";
 import { projectFirestore } from "../../../firebase/config";
 import requester from "../../../firebase/requester";
 import ProfileHeaderUserStatusModal from "../ProfileHeaderUserStatusModal";
-import { useGlobalContext } from "../../../utils/context";
+import { useAuth } from "../../../utils/authProvider";
 
 function ProfileHeaderFollowingModal({ showModal, hideModal, userFollowing }) {
   const [postCreatorFollowing, setPostCreatorFollowing] = useState([]);
@@ -12,7 +12,7 @@ function ProfileHeaderFollowingModal({ showModal, hideModal, userFollowing }) {
   const [clickedUserId, setClickedUserId] = useState();
   const [clickedUser, setClickedUser] = useState({});
   const history = useHistory();
-  const authUser = useGlobalContext();
+  const { authUser } = useAuth();
 
   useEffect(() => {
     setPostCreatorFollowing(
