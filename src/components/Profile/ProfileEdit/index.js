@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Form, Button } from "react-bootstrap";
-import { useGlobalContext } from "../../../utils/context";
+import { useAuth } from "../../../utils/authProvider";
 import ProfileSettingsFormGroup from "../ProfileSettingsFormGroup";
 import ProfileHeaderImageModal from "../ProfileHeaderImageModal";
 import requester from "../../../firebase/requester";
@@ -13,7 +13,7 @@ function ProfileEdit() {
   const [profileEmail, setProfileEmail] = useState("");
   const [profilePhoneNumber, setProfilePhoneNumber] = useState("");
   const [profileGender, setProfileGender] = useState("");
-  const authUser = useGlobalContext();
+  const { authUser } = useAuth();
 
   const showProfileImageOptions = () => setShowProfileImage(true);
   const hideProfileImageOptions = () => setShowProfileImage(false);
