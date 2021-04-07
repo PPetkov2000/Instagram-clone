@@ -4,14 +4,14 @@ import "firebase/firestore";
 import "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyADZY6u_27AMgHv94EpFt_yuqF7g_EKUOA",
-  authDomain: "teammanager-a529e.firebaseapp.com",
-  databaseURL: "https://teammanager-a529e.firebaseio.com",
-  projectId: "teammanager-a529e",
-  storageBucket: "teammanager-a529e.appspot.com",
-  messagingSenderId: "518332842812",
-  appId: "1:518332842812:web:cfa7e42cc1dd95ab065439",
-  measurementId: "G-LM2RFQLJ2E",
+  apiKey: process.env.API_KEY,
+  authDomain: process.env.AUTH_DOMAIN,
+  databaseURL: process.env.DATABASE_URL,
+  projectId: process.env.PROJECT_ID,
+  storageBucket: process.env.STORAGE_BUCKET,
+  messagingSenderId: process.env.MESSAGING_SENDER_ID,
+  appId: process.env.APP_ID,
+  measurementId: process.env.MEASUREMENT_ID,
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
