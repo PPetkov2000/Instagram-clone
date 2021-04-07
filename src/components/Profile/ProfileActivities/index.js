@@ -4,6 +4,7 @@ import ProfileChannel from "../ProfileChannel";
 import ProfileSaved from "../ProfileSaved";
 import ProfileTagged from "../ProfileTagged";
 import { projectFirestore } from "../../../firebase/config";
+import requester from "../../../firebase/requester";
 
 const ProfileActivities = ({
   openPosts,
@@ -39,23 +40,19 @@ const ProfileActivities = ({
     setSavedPosts(
       currentUser.saved.reduce((result, postId) => {
         Promise.all([
-          projectFirestore.collection("posts").doc(postId).get(),
-          projectFirestore
-            .collection("posts")
-            .doc(postId)
-            .collection("comments")
-            .get(),
-        ]).then(([postInfo, commentsInfo]) => {
-          const post = { id: postInfo.id, ...postInfo.data() };
-          const comments = commentsInfo.docs.map((doc) => ({
-            commentId: doc.id,
-            ...doc.data(),
-          }));
-
-          const data = { ...post, comments };
-
-          result.push(data);
-        });
+          requester.get("posts", postId),
+          requester.getAll(`posts/${postId}/comments`),
+        ])
+          .then(([postInfo, commentsInfo]) => {
+            const post = { id: postInfo.id, ...postInfo.data() };
+            const comments = commentsInfo.docs.map((doc) => ({
+              commentId: doc.id,
+              ...doc.data(),
+            }));
+            const data = { ...post, comments };
+            result.push(data);
+          })
+          .catch(console.error);
 
         return result;
       }, [])
