@@ -1,6 +1,6 @@
 import React from "react";
 import { BsGrid3X3, BsBookmark, BsPersonSquare, BsTv } from "react-icons/bs";
-import { useGlobalContext } from "../../../utils/context";
+import { useAuth } from "../../../utils/authProvider";
 
 const ProfileNavbar = ({
   openPosts,
@@ -13,7 +13,7 @@ const ProfileNavbar = ({
   openTaggedHandler,
   currentUserId,
 }) => {
-  const authUser = useGlobalContext();
+  const { authUser } = useAuth();
 
   return (
     <nav className="user-profile-navbar">
