@@ -106,6 +106,54 @@ const unfollowUser = (authUser, unfollowedUserId) => {
     .catch(console.error);
 };
 
+const createComment = (authUser, post, commentText) => {
+  requester
+    .create(`posts/${post.id}/comments`, {
+      text: commentText,
+      creatorId: authUser.uid,
+      creatorUsername: authUser.username,
+      postId: post.id,
+      timestamp: new Date(),
+      likes: [],
+    })
+    .then(() => {
+      if (authUser.uid === post.creator) return;
+
+      requester.get("instagramUsers", post.creator).then((res) => {
+        const notifications = res.data().notifications;
+        const alreadyNotified = notifications.findIndex(
+          (x) => x.id === authUser.uid
+        );
+        if (alreadyNotified > -1) return;
+
+        notifications.push({
+          id: authUser.uid,
+          username: authUser.username,
+          profileImage: authUser.profileImage,
+          timestamp: new Date(),
+          type: "comment",
+          postId: post.id,
+          postImageUrl: post.imageUrl,
+        });
+
+        return requester.update("instagramUsers", post.creator, {
+          notifications,
+        });
+      });
+    })
+    .catch(console.error);
+};
+
+const deleteComment = (postId, commentId) => {
+  requester
+    .remove(`posts/${postId}/comments`, commentId)
+    .then(() => {
+      console.log("Comment successfully removed.");
+      // TODO: remove the post creator notification that was created when the user first posted his comment.
+    })
+    .catch(console.error);
+};
+
 const likeComment = (authUser, comment, postImageUrl) => {
   requester
     .get("instagramUsers", comment.creatorId)
@@ -163,6 +211,8 @@ export {
   saveAndUnSavePost,
   followUser,
   unfollowUser,
+  createComment,
+  deleteComment,
   likeComment,
   dislikeComment,
 };
