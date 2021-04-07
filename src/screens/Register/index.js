@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
-import { projectAuth } from "../../firebase/config";
 import { generateUserDocument } from "../../firebase/user";
 import { useAuth } from "../../utils/authProvider";
 import Loader from "../../components/Loader";
@@ -13,7 +12,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const history = useHistory();
-  const { loading, authUser } = useAuth();
+  const { loading, authUser, signup } = useAuth();
 
   useEffect(() => {
     if (authUser) {
@@ -25,10 +24,7 @@ const Register = () => {
     e.preventDefault();
 
     try {
-      const { user } = await projectAuth.createUserWithEmailAndPassword(
-        email,
-        password
-      );
+      const { user } = await signup(email, password);
       generateUserDocument(user, {
         fullName,
         username,
