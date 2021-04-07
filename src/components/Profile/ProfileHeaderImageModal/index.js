@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Modal, ListGroup, FormControl } from "react-bootstrap";
 import { projectStorage } from "../../../firebase/config";
 import requester from "../../../firebase/requester";
-import { useGlobalContext } from "../../../utils/context";
+import { useAuth } from "../../../utils/authProvider";
 
 const ProfileHeaderImageModal = ({
   showProfileImage,
   hideProfileImageOptions,
 }) => {
   const [file, setFile] = useState(null);
-  const authUser = useGlobalContext();
+  const { authUser } = useAuth();
 
   useEffect(() => {
     if (file != null) {
@@ -23,6 +23,7 @@ const ProfileHeaderImageModal = ({
         (snapshot) => {
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log(progress);
         },
         (err) => {
           if (err.code === "storage/unauthorized") {
