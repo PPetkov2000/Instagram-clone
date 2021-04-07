@@ -5,13 +5,12 @@ export default function (timestamp) {
   const timePastInDays = new Date(diff).getUTCDate() - 1;
   const timePastInHours = new Date(diff).getUTCHours();
   const timePastInMinutes = new Date(diff).getUTCMinutes();
-  const timePastInSeconds = new Date(diff).getUTCSeconds();
   let result = "";
 
   if (timePastInDays === 0) {
     if (timePastInHours === 0) {
       if (timePastInMinutes === 0) {
-        result = `${timePastInSeconds} seconds ago`;
+        result = "less than a minute";
       } else if (timePastInMinutes === 1) {
         result = `${timePastInMinutes} minute ago`;
       } else {
