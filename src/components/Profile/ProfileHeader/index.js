@@ -8,8 +8,8 @@ import ProfileHeaderFollowingModal from "../ProfileHeaderFollowingModal";
 import ProfileHeaderUserStatusModal from "../ProfileHeaderUserStatusModal";
 import ProfileHeaderRestrictUserModal from "../ProfileHeaderRestrictUserModal";
 import { projectFirestore } from "../../../firebase/config";
-import { useGlobalContext } from "../../../utils/context";
-import requester from "../../../firebase/requester";
+import { useAuth } from "../../../utils/authProvider";
+import { followUser } from "../../../utils/userActions";
 
 const ProfileHeader = ({ currentUser, currentUserPosts }) => {
   const [showProfileImage, setShowProfileImage] = useState(false);
@@ -20,7 +20,7 @@ const ProfileHeader = ({ currentUser, currentUserPosts }) => {
   const [showProfileRestrictUser, setShowProfileRestrictUser] = useState(false);
   const [isFollowingUser, setIsFollowingUser] = useState(false);
   const history = useHistory();
-  const authUser = useGlobalContext();
+  const { authUser } = useAuth();
 
   const showProfileImageOptions = () => {
     if (currentUser.id === authUser.uid) {
@@ -56,39 +56,6 @@ const ProfileHeader = ({ currentUser, currentUserPosts }) => {
 
     return () => unsub();
   }, [authUser, currentUser.id]);
-
-  const followUser = (followedUserId) => {
-    Promise.all([
-      requester.get("instagramUsers", authUser.uid),
-      requester.get("instagramUsers", followedUserId),
-    ])
-      .then(([currentUser, followedUser]) => {
-        const currentUserFollowing = currentUser.data().following;
-        const followedUserFollowers = followedUser.data().followers;
-        const followedUserNotifications = followedUser.data().notifications;
-
-        currentUserFollowing.push(followedUserId);
-        followedUserFollowers.push(authUser.uid);
-        followedUserNotifications.push({
-          id: followedUserId,
-          username: currentUser.data().username,
-          profileImage: currentUser.data().profileImage,
-          timestamp: new Date(),
-          type: "follower",
-        });
-
-        return Promise.all([
-          requester.update("instagramUsers", authUser.uid, {
-            following: currentUserFollowing,
-          }),
-          requester.update("instagramUsers", followedUserId, {
-            followers: followedUserFollowers,
-            notifications: followedUserNotifications,
-          }),
-        ]);
-      })
-      .catch(console.error);
-  };
 
   return (
     <header className="user-profile-header">
@@ -136,7 +103,7 @@ const ProfileHeader = ({ currentUser, currentUserPosts }) => {
               ) : (
                 <button
                   className="user-profile-follow-button"
-                  onClick={() => followUser(currentUser.id)}
+                  onClick={() => followUser(authUser, currentUser.id)}
                 >
                   Follow
                 </button>
