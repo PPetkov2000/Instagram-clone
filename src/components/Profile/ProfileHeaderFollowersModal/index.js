@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import { projectFirestore } from "../../../firebase/config";
-import { useGlobalContext } from "../../../utils/context";
+import { useAuth } from "../../../utils/authProvider";
 import requester from "../../../firebase/requester";
 import ProfileHeaderUserStatusModal from "../ProfileHeaderUserStatusModal";
 
@@ -17,7 +17,7 @@ function ProfileHeaderFollowersModal({
   const [showUserStatusModal, setShowUserStatusModal] = useState(false);
   const [clickedUser, setClickedUser] = useState({});
   const history = useHistory();
-  const authUser = useGlobalContext();
+  const { authUser } = useAuth();
 
   useEffect(() => {
     if (authUser == null) return;
@@ -92,7 +92,7 @@ function ProfileHeaderFollowersModal({
                     ) : (
                       <button
                         className="profile-header-followers-button"
-                        onClick={() => followUser(follower.id)}
+                        onClick={() => followUser(authUser, follower.id)}
                       >
                         Follow
                       </button>
