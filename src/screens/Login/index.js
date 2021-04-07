@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
-import { projectAuth } from "../../firebase/config";
 import { useAuth } from "../../utils/authProvider";
 import Loader from "../../components/Loader";
 
@@ -10,7 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const history = useHistory();
-  const { loading, authUser } = useAuth();
+  const { loading, authUser, login } = useAuth();
 
   useEffect(() => {
     if (authUser) {
@@ -22,10 +21,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const { user } = await projectAuth.signInWithEmailAndPassword(
-        email,
-        password
-      );
+      const { user } = await login(email, password);
       localStorage.setItem("userId", user.uid);
       console.log("Logged in successfully!");
     } catch (error) {
