@@ -19,16 +19,15 @@ import {
 } from "react-icons/bs";
 import { Link, useHistory } from "react-router-dom";
 import NotificationsItem from "../NotificationsItem";
-import { projectAuth } from "../../firebase/config";
 import { useAuth } from "../../utils/authProvider";
 import requester from "../../firebase/requester";
 
 const NavBar = () => {
   const [search, setSearch] = useState("");
-  const [searchedResults, setSearchedResults] = useState("");
+  const [searchedResults, setSearchedResults] = useState([]);
   const [availableContacts, setAvailableContacts] = useState([]);
   const history = useHistory();
-  const authUser = useAuth();
+  const { authUser, logout } = useAuth();
 
   useEffect(() => {
     requester
@@ -42,28 +41,32 @@ const NavBar = () => {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
+      const users = [];
       availableContacts.forEach((contact) => {
-        if (search !== "" && contact.username.includes(search)) {
-          console.log(`Match: ${contact.username} => ${search}`);
+        if (search !== "" && contact.username.startsWith(search)) {
+          users.push(contact);
+        } else {
+          setSearchedResults([]);
         }
       });
+      setSearchedResults(users);
     }, 500);
 
     return () => clearTimeout(timeout);
   }, [search, availableContacts]);
 
-  const logoutUser = () => {
-    projectAuth
-      .signOut()
-      .then(() => {
-        localStorage.removeItem("userId");
-        history.push("/login");
-        console.log("You have logged out!");
-      })
-      .catch(console.error);
+  const logoutUser = async () => {
+    try {
+      await logout();
+      localStorage.removeItem("userId");
+      history.push("/login");
+      console.log("You have logged out!");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  return authUser ? (
+  return !authUser ? null : (
     <Navbar bg="light" variant="light" className="navbar">
       <Navbar.Brand>
         <Link to="/">
@@ -74,7 +77,7 @@ const NavBar = () => {
           />
         </Link>
       </Navbar.Brand>
-      <Form inline>
+      <Form style={{ position: "relative" }}>
         <FormControl
           type="text"
           placeholder="Search"
@@ -82,6 +85,22 @@ const NavBar = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
+        <div
+          className="search-result"
+          style={{
+            display: searchedResults ? "block" : "none",
+            position: "absolute",
+            backgroundColor: "#e9eaeb",
+            width: "100%",
+          }}
+        >
+          {searchedResults.length > 0 &&
+            searchedResults.map((result) => (
+              <div key={result.id}>
+                <Link to={`/profile/${result.id}`}>{result.username}</Link>
+              </div>
+            ))}
+        </div>
       </Form>
       <Nav>
         <Nav.Link
@@ -117,17 +136,19 @@ const NavBar = () => {
               <Popover>
                 <Popover.Content>
                   <ListGroup variant="flush">
-                    {authUser.notifications
-                      .sort((a, b) => b.timestamp - a.timestamp)
-                      .slice(0, 5)
-                      .map((notification) => {
-                        return (
-                          <NotificationsItem
-                            key={notification.timestamp}
-                            notification={notification}
-                          />
-                        );
-                      })}
+                    {authUser &&
+                      authUser.notifications &&
+                      authUser.notifications
+                        .sort((a, b) => b.timestamp - a.timestamp)
+                        .slice(0, 5)
+                        .map((notification) => {
+                          return (
+                            <NotificationsItem
+                              key={notification.timestamp}
+                              notification={notification}
+                            />
+                          );
+                        })}
                   </ListGroup>
                 </Popover.Content>
               </Popover>
@@ -136,44 +157,46 @@ const NavBar = () => {
             <BsHeart />
           </OverlayTrigger>
         </Nav.Link>
-        <Nav.Link href="#profile" className="navbar__icon">
-          <OverlayTrigger
-            trigger="click"
-            rootClose
-            key="bottom"
-            placement="bottom"
-            overlay={
-              <Popover className="navbar__profile-popover">
-                <Popover.Content>
-                  <Link to={`/profile/${authUser.uid}`}>
-                    <BsPeopleCircle className="navbar__profile-popover-icon" />
-                    Profile
-                  </Link>
-                  <Link to="/saved">
-                    <BsBookmark className="navbar__profile-popover-icon" />
-                    Saved
-                  </Link>
-                  <Link to={`/edit/${authUser.uid}`}>
-                    <BsGearWide className="navbar__profile-popover-icon" />
-                    Settings
-                  </Link>
-                  <p style={{ cursor: "pointer" }} onClick={logoutUser}>
-                    Logout
-                  </p>
-                </Popover.Content>
-              </Popover>
-            }
-          >
-            <img
-              src={authUser.profileImage}
-              alt="profile"
-              className="navbar__profile-image"
-            />
-          </OverlayTrigger>
-        </Nav.Link>
+        {authUser && (
+          <Nav.Link href="#profile" className="navbar__icon">
+            <OverlayTrigger
+              trigger="click"
+              rootClose
+              key="bottom"
+              placement="bottom"
+              overlay={
+                <Popover className="navbar__profile-popover">
+                  <Popover.Content>
+                    <Link to={`/profile/${authUser.uid}`}>
+                      <BsPeopleCircle className="navbar__profile-popover-icon" />
+                      Profile
+                    </Link>
+                    <Link to="/saved">
+                      <BsBookmark className="navbar__profile-popover-icon" />
+                      Saved
+                    </Link>
+                    <Link to={`/edit/${authUser.uid}`}>
+                      <BsGearWide className="navbar__profile-popover-icon" />
+                      Settings
+                    </Link>
+                    <p style={{ cursor: "pointer" }} onClick={logoutUser}>
+                      Logout
+                    </p>
+                  </Popover.Content>
+                </Popover>
+              }
+            >
+              <img
+                src={authUser.profileImage}
+                alt="profile"
+                className="navbar__profile-image"
+              />
+            </OverlayTrigger>
+          </Nav.Link>
+        )}
       </Nav>
     </Navbar>
-  ) : null;
+  );
 };
 
 export default NavBar;
