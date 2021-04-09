@@ -2,9 +2,10 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Suggestions from "../Suggestions";
 import { useAuth } from "../../utils/authProvider";
+import Loader from "../Loader";
 
 const Aside = () => {
-  const authUser = useAuth();
+  const { authUser } = useAuth();
 
   return authUser ? (
     <aside className="aside">
@@ -39,7 +40,7 @@ const Aside = () => {
       </div>
     </aside>
   ) : (
-    <h2>Loading...</h2>
+    <Loader />
   );
 };
 
