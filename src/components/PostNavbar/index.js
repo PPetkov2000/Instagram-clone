@@ -19,7 +19,7 @@ const PostNavbar = ({ post }) => {
   const [saved, setSaved] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const history = useHistory();
-  const authUser = useAuth();
+  const { authUser } = useAuth();
   const authUserId = authUser && authUser.uid;
 
   useEffect(() => {
