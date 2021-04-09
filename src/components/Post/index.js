@@ -13,7 +13,7 @@ const Post = ({ post }) => {
   const [showOptionsModal, setShowOptionsModal] = useState(false);
   const [showCommentLikesModal, setShowCommentLikesModal] = useState(false);
   const [postCreatorProfileImage, setPostCreatorProfileImage] = useState();
-  const authUser = useAuth();
+  const { authUser } = useAuth();
 
   const showOptions = () => setShowOptionsModal(true);
   const hideOptions = () => setShowOptionsModal(false);
@@ -48,7 +48,7 @@ const Post = ({ post }) => {
               className="post__header-image"
             />
           </Link>
-          <span>{post.username}</span>
+          <strong>{post.username}</strong>
           <Card.Link href="#properties" onClick={showOptions}>
             <BsThreeDots className="float-right text-dark post__options-icon" />
           </Card.Link>
