@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { BsHeart } from "react-icons/bs";
-import { FcLike } from "react-icons/fc";
+import { BsFillTrashFill, BsHeart, BsHeartFill } from "react-icons/bs";
 import { projectFirestore } from "../../firebase/config";
 import { useAuth } from "../../utils/authProvider";
-import requester from "../../firebase/requester";
 import formatTimestamp from "../../utils/formatTimestamp";
 import CommentLikesModal from "../CommentLikesModal";
+import {
+  likeComment,
+  dislikeComment,
+  deleteComment,
+} from "../../utils/userActions";
 
 const Comment = ({ comment, post }) => {
   const [liked, setLiked] = useState(false);
   const [showLikesModal, setShowLikesModal] = useState(false);
   const history = useHistory();
-  const authUser = useAuth();
+  const { authUser } = useAuth();
   const authUserId = authUser && authUser.uid;
 
   useEffect(() => {
@@ -26,7 +29,7 @@ const Comment = ({ comment, post }) => {
       });
 
     return () => unsub();
-  }, [comment.postId, comment.id, authUserId]);
+  }, [comment, authUserId]);
 
   const goToUserProfile = () => {
     history.push(`/profile/${comment.creatorId}`);
@@ -34,55 +37,6 @@ const Comment = ({ comment, post }) => {
 
   const openLikesModal = () => setShowLikesModal(true);
   const closeLikesModal = () => setShowLikesModal(false);
-
-  const likeAndDislikeComment = () => {
-    Promise.all([
-      projectFirestore
-        .collection("posts")
-        .doc(comment.postId)
-        .collection("comments")
-        .doc(comment.id)
-        .get(),
-      requester.get("instagramUsers", comment.creatorId),
-    ])
-      .then(([currentComment, commentCreator]) => {
-        let currentCommentLikes = currentComment.data().likes;
-        let commentCreatorNotifications = commentCreator.data().notifications;
-
-        if (!currentCommentLikes.includes(authUserId)) {
-          currentCommentLikes.push(authUserId);
-          commentCreatorNotifications.push({
-            id: authUserId,
-            username: authUser && authUser.username,
-            profileImage: authUser && authUser.profileImage,
-            timestamp: new Date(),
-            type: "like-comment",
-            postId: comment.postId,
-            postImageUrl: post.imageUrl,
-          });
-        } else {
-          currentCommentLikes = currentCommentLikes.filter(
-            (x) => x !== authUserId
-          );
-          commentCreatorNotifications = commentCreatorNotifications.filter(
-            (x) => x.id !== authUserId
-          );
-        }
-
-        return Promise.all([
-          projectFirestore
-            .collection("posts")
-            .doc(comment.postId)
-            .collection("comments")
-            .doc(comment.id)
-            .update({ likes: currentCommentLikes }),
-          requester.update("instagramUsers", comment.creatorId, {
-            notifications: commentCreatorNotifications,
-          }),
-        ]);
-      })
-      .catch(console.error);
-  };
 
   return (
     <div>
@@ -93,10 +47,23 @@ const Comment = ({ comment, post }) => {
           </strong>{" "}
           {comment.text}
         </p>
-        {liked ? (
-          <FcLike className="comment__icon" onClick={likeAndDislikeComment} />
+        {authUserId === comment.creatorId ? (
+          <BsFillTrashFill
+            className="comment__icon"
+            onClick={() => deleteComment(post.id, comment.id)}
+            style={{ color: "red" }}
+          />
+        ) : liked ? (
+          <BsHeartFill
+            className="comment__icon"
+            onClick={() => dislikeComment(authUser, comment)}
+            style={{ color: "red" }}
+          />
         ) : (
-          <BsHeart className="comment__icon" onClick={likeAndDislikeComment} />
+          <BsHeart
+            className="comment__icon"
+            onClick={() => likeComment(authUser, comment, post.imageUrl)}
+          />
         )}
       </div>
       <div className="comment__details">
