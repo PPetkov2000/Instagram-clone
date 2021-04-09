@@ -3,15 +3,15 @@ import { useHistory } from "react-router-dom";
 import { Modal, ListGroup } from "react-bootstrap";
 import { projectFirestore } from "../../firebase/config";
 import { useAuth } from "../../utils/authProvider";
-import { followAndUnfollowUser } from "../../utils/userActions";
+import { followUser, unfollowUser } from "../../utils/userActions";
 
 const PostModal = ({ showModal, hideOptions, postId, postCreator }) => {
   const [isCurrentUserFollowing, setIsCurrentUserFollowing] = useState(false);
   const history = useHistory();
-  const authUser = useAuth();
+  const { authUser } = useAuth();
 
   useEffect(() => {
-    projectFirestore
+    const unsub = projectFirestore
       .collection("instagramUsers")
       .doc(authUser.uid)
       .onSnapshot((snapshot) => {
@@ -19,6 +19,8 @@ const PostModal = ({ showModal, hideOptions, postId, postCreator }) => {
           snapshot.data().following.includes(postCreator)
         );
       });
+
+    return () => unsub();
   }, [authUser, postCreator]);
 
   const openPost = () => {
@@ -39,7 +41,7 @@ const PostModal = ({ showModal, hideOptions, postId, postCreator }) => {
                   action
                   className="text-danger"
                   onClick={() => {
-                    followAndUnfollowUser(authUser, postCreator);
+                    unfollowUser(authUser, postCreator);
                     hideOptions();
                   }}
                 >
@@ -50,7 +52,7 @@ const PostModal = ({ showModal, hideOptions, postId, postCreator }) => {
                   action
                   className="text-success"
                   onClick={() => {
-                    followAndUnfollowUser(authUser, postCreator);
+                    followUser(authUser, postCreator);
                     hideOptions();
                   }}
                 >
