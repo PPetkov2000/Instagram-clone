@@ -14,7 +14,7 @@ function CommentLikesModal({ showModal, hideModal, likes }) {
   const [clickedUser, setClickedUser] = useState();
   const [authUserFollowing, setAuthUserFollowing] = useState([]);
   const history = useHistory();
-  const authUser = useAuth();
+  const { authUser } = useAuth();
 
   useEffect(() => {
     projectFirestore
