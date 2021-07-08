@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Stories from "../../components/Stories";
 import Posts from "../../components/Posts";
 import UploadForm from "../../components/UploadForm";
@@ -6,14 +6,8 @@ import Aside from "../../components/Aside";
 import Loader from "../../components/Loader";
 import { useAuth } from "../../utils/authProvider";
 
-const Home = ({ history }) => {
-  const { loading, authUser } = useAuth();
-
-  useEffect(() => {
-    if (!authUser || !authUser.uid) {
-      history.push("/login");
-    }
-  }, [authUser, history]);
+const Home = () => {
+  const { loading } = useAuth();
 
   return loading ? (
     <Loader />
