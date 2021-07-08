@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.scss";
 import AuthProvider from "./utils/authProvider";
+import PrivateRoute from "./router/PrivateRoute"
 import Navbar from "./components/Navbar";
 import Home from "./screens/Home";
 import PostCommentsDetails from "./screens/PostCommentsDetails";
@@ -17,14 +18,11 @@ const App = () => {
       <Router>
         <Navbar />
         <Switch>
-          <Route path="/" exact component={Home} />
-          <Route path="/messages" component={Messages} />
-          <Route
-            path="/post-comments-details/:id"
-            component={PostCommentsDetails}
-          />
-          <Route path="/profile/:id" component={Profile} />
-          <Route path="/edit/:id" component={ProfileSettings} />
+          <PrivateRoute path="/" exact component={Home} />
+          <PrivateRoute path="/messages" component={Messages} />
+          <PrivateRoute path="/post-comments-details/:id" component={PostCommentsDetails} />
+          <PrivateRoute path="/profile/:id" component={Profile} />
+          <PrivateRoute path="/edit/:id" component={ProfileSettings} />
           <Route path="/register" component={Register} />
           <Route path="/login" component={Login} />
         </Switch>
