@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { InputGroup, FormControl, Button } from "react-bootstrap";
-import { useAuth } from "../../utils/authProvider";
+import { useAuth } from "../../contexts/authProvider";
 import { createComment } from "../../utils/userActions";
 
 const AddComment = ({ post }) => {
