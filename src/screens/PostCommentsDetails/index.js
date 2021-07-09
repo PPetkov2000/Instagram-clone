@@ -6,7 +6,7 @@ import Comments from "../../components/Comments";
 import AddComment from "../../components/AddComment";
 import CommentLikesModal from "../../components/CommentLikesModal";
 import { projectFirestore } from "../../firebase/config";
-import { useAuth } from "../../utils/authProvider";
+import { useAuth } from "../../contexts/authProvider";
 import { followUser, unfollowUser } from "../../utils/userActions";
 import formatTimestamp from "../../utils/formatTimestamp";
 
@@ -117,8 +117,8 @@ const PostCommentsDetails = (props) => {
               {post.likes.length === 0
                 ? "No likes"
                 : post.likes.length === 1
-                ? "1 like"
-                : post.likes.length + " likes"}
+                  ? "1 like"
+                  : post.likes.length + " likes"}
             </button>
             <p className="post-details__footer-text text-muted">
               {formatTimestamp(post.timestamp)}
