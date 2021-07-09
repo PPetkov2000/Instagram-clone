@@ -4,7 +4,7 @@ import Posts from "../../components/Posts";
 import UploadForm from "../../components/UploadForm";
 import Aside from "../../components/Aside";
 import Loader from "../../components/Loader";
-import { useAuth } from "../../utils/authProvider";
+import { useAuth } from "../../contexts/authProvider";
 
 const Home = () => {
   const { loading } = useAuth();
