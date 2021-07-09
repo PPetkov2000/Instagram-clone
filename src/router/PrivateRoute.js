@@ -1,6 +1,6 @@
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
-import { useAuth } from "../utils/authProvider";
+import { useAuth } from "../contexts/authProvider";
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   const { authUser } = useAuth();
