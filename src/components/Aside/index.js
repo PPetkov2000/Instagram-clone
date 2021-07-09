@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Suggestions from "../Suggestions";
-import { useAuth } from "../../utils/authProvider";
+import { useAuth } from "../../contexts/authProvider";
 import Loader from "../Loader";
 
 const Aside = () => {
