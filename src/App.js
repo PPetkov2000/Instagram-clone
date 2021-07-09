@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.scss";
-import AuthProvider from "./utils/authProvider";
+import AuthProvider from "./contexts/authProvider";
 import PrivateRoute from "./router/PrivateRoute"
 import Navbar from "./components/Navbar";
 import Home from "./screens/Home";
