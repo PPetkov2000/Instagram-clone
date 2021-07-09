@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { BsFillTrashFill, BsHeart, BsHeartFill } from "react-icons/bs";
 import { projectFirestore } from "../../firebase/config";
-import { useAuth } from "../../utils/authProvider";
+import { useAuth } from "../../contexts/authProvider";
 import formatTimestamp from "../../utils/formatTimestamp";
 import CommentLikesModal from "../CommentLikesModal";
 import {
