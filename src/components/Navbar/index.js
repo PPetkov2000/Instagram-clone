@@ -19,7 +19,7 @@ import {
 } from "react-icons/bs";
 import { Link, useHistory } from "react-router-dom";
 import NotificationsItem from "../NotificationsItem";
-import { useAuth } from "../../utils/authProvider";
+import { useAuth } from "../../contexts/authProvider";
 import requester from "../../firebase/requester";
 
 const NavBar = () => {
