@@ -4,7 +4,7 @@ import {
   projectFirestore,
   timestamp,
 } from "../firebase/config";
-import { useAuth } from "../utils/authProvider";
+import { useAuth } from "../contexts/authProvider";
 
 const useStorage = (file) => {
   const { authUser } = useAuth();
