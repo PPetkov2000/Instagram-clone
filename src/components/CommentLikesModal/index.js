@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { Modal } from "react-bootstrap";
-import { useAuth } from "../../utils/authProvider";
+import { useAuth } from "../../contexts/authProvider";
 import { projectFirestore } from "../../firebase/config";
 import requester from "../../firebase/requester";
 import ProfileHeaderUserStatusModal from "../Profile/ProfileHeaderUserStatusModal";
