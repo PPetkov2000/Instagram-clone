@@ -4,7 +4,7 @@ import { Modal } from "react-bootstrap";
 import { projectFirestore } from "../../../firebase/config";
 import requester from "../../../firebase/requester";
 import ProfileHeaderUserStatusModal from "../ProfileHeaderUserStatusModal";
-import { useAuth } from "../../../utils/authProvider";
+import { useAuth } from "../../../contexts/authProvider";
 
 function ProfileHeaderFollowingModal({ showModal, hideModal, userFollowing }) {
   const [postCreatorFollowing, setPostCreatorFollowing] = useState([]);
