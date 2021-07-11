@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Form, Button } from "react-bootstrap";
-import { useAuth } from "../../../utils/authProvider";
+import { useAuth } from "../../../contexts/authProvider";
 import ProfileSettingsFormGroup from "../ProfileSettingsFormGroup";
 import { projectAuth } from "../../../firebase/config";
 
