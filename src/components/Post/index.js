@@ -7,7 +7,7 @@ import PostNavbar from "../PostNavbar";
 import PostModal from "../PostModal";
 import { projectFirestore } from "../../firebase/config";
 import CommentLikesModal from "../CommentLikesModal";
-import { useAuth } from "../../utils/authProvider";
+import { useAuth } from "../../contexts/authProvider";
 
 const Post = ({ post }) => {
   const [showOptionsModal, setShowOptionsModal] = useState(false);
@@ -60,8 +60,8 @@ const Post = ({ post }) => {
             {post.likes.length === 0
               ? "No likes"
               : post.likes.length === 1
-              ? "1 like"
-              : post.likes.length + " likes"}
+                ? "1 like"
+                : post.likes.length + " likes"}
           </button>
           <Comments post={post} />
         </Card.Body>
