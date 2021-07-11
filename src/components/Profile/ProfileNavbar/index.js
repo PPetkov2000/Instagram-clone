@@ -1,6 +1,6 @@
 import React from "react";
 import { BsGrid3X3, BsBookmark, BsPersonSquare, BsTv } from "react-icons/bs";
-import { useAuth } from "../../../utils/authProvider";
+import { useAuth } from "../../../contexts/authProvider";
 
 const ProfileNavbar = ({
   openPosts,
