@@ -1,6 +1,6 @@
 import React from "react";
 import { Modal, ListGroup } from "react-bootstrap";
-import { useAuth } from "../../../utils/authProvider";
+import { useAuth } from "../../../contexts/authProvider";
 import { unfollowUser } from "../../../utils/userActions";
 
 function ProfileHeaderUserStatusModal({ showModal, hideModal, clickedUser }) {
