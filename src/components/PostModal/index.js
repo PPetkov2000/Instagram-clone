@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { Modal, ListGroup } from "react-bootstrap";
 import { projectFirestore } from "../../firebase/config";
-import { useAuth } from "../../utils/authProvider";
+import { useAuth } from "../../contexts/authProvider";
 import { followUser, unfollowUser } from "../../utils/userActions";
 
 const PostModal = ({ showModal, hideOptions, postId, postCreator }) => {
