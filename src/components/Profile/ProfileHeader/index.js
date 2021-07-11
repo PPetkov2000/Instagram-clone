@@ -8,7 +8,7 @@ import ProfileHeaderFollowingModal from "../ProfileHeaderFollowingModal";
 import ProfileHeaderUserStatusModal from "../ProfileHeaderUserStatusModal";
 import ProfileHeaderRestrictUserModal from "../ProfileHeaderRestrictUserModal";
 import { projectFirestore } from "../../../firebase/config";
-import { useAuth } from "../../../utils/authProvider";
+import { useAuth } from "../../../contexts/authProvider";
 import { followUser } from "../../../utils/userActions";
 
 const ProfileHeader = ({ currentUser, currentUserPosts }) => {
