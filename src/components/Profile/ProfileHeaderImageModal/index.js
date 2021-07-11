@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal, ListGroup, FormControl } from "react-bootstrap";
 import { projectStorage } from "../../../firebase/config";
 import requester from "../../../firebase/requester";
-import { useAuth } from "../../../utils/authProvider";
+import { useAuth } from "../../../contexts/authProvider";
 
 const ProfileHeaderImageModal = ({
   showProfileImage,
