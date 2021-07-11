@@ -10,7 +10,7 @@ import {
 } from "react-icons/bs";
 import { FcLike } from "react-icons/fc";
 import { projectFirestore } from "../../firebase/config";
-import { useAuth } from "../../utils/authProvider";
+import { useAuth } from "../../contexts/authProvider";
 import PostNavbarModal from "../PostNavbarModal";
 import { likeAndDislikePost, saveAndUnSavePost } from "../../utils/userActions";
 
